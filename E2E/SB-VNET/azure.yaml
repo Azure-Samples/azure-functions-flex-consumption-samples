@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: SB-VNET
+metadata:
+    template: sb-vnet@0.0.2-beta
+hooks:
+    postprovision:
+      windows:
+        shell: pwsh
+        run: cd ./src;../scripts/deploy.ps1
+        interactive: true
+        continueOnError: false
+      posix:
+        shell: sh
+        run: cd ./src;../scripts/deploy.sh
+        interactive: true
+        continueOnError: false

@@ -1,0 +1,29 @@
+//Send request to deployed app (Cloud)
+POST https://<YOUR FUNCTION APP NAME>.azurewebsites.net/api/ProcessCustomerFeedback
+Content-Type: application/json
+
+< singlesamplecustomerfeedback.json
+
+###
+
+//Send request to deployed app with multiple feedback items (Cloud)
+POST https://<YOUR FUNCTION APP NAME>.azurewebsites.net/api/ProcessCustomerFeedback
+Content-Type: application/json
+
+< samplecustomerfeedback.json
+
+###
+
+//Send request to local app (localhost)
+POST http://localhost:7071/api/ProcessCustomerFeedback
+Content-Type: application/json
+
+< singlesamplecustomerfeedback.json
+
+###
+
+//Send request to local app
+POST http://localhost:7071/api/ProcessCustomerFeedback
+Content-Type: application/json
+
+< samplecustomerfeedback.json

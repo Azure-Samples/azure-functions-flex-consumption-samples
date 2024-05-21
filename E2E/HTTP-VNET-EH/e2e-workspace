@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "./src"
+		},
+		{
+			"path": "./bicep"
+		},
+		{
+			"path": "./loadtest"
+		}
+	],
+	"settings": {
+		"debug.internalConsoleOptions": "neverOpen"
+	}
+}

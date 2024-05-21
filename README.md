@@ -1,57 +1,24 @@
-# Project Name
+# Azure Functions Flex Consumption Samples
 
-(short, 1-3 sentenced, description of the project)
+This repository contains starters, infrastructure as code, and end to end samples for Azure Functions Flex Consumption. Check out [the Azure documentation to learn more about Azure Functions Flex Consumption](https://aka.ms/flexconsumption). 
 
-## Features
+## IaC samples Overview
 
-This project framework provides the following features:
+Flex Consumption has made some significant improvements to the control plane compared to other Azure Functions hosting plans. The following foundational samples are available in this repository for creating a Flex Consumption app that you should review and copy if you are automating the creation of your function apps with ARM, Bicep, or Terraform:
 
-* Feature 1
-* Feature 2
-* ...
+- [ARM (Azure Resource Manager)](./IaC/armtemplate/README.md): Contains a sample for deploying Azure Functions using ARM templates.
+- [Bicep](./IaC/bicep/README.md): Contains a sample for deploying Azure Functions using Bicep templates.
+- [Terraform](./IaC/terraform/README.md): Contains a sample for deploying Azure Functions using Terraform scripts.
 
-## Getting Started
+## Starter Templates Overview (Code + AZD)
 
-### Prerequisites
+These starters give you the code + IaC (Azure Dev CLI enabled) to build and deploy simple/common scenarios to Flex Consumption.
 
-(ideally very short, if any)
+- [HTTP (.NET 8 Isolated / C#)](./starters/http/dotnet): Contains a sample for building and deploying simple HTTP services that handle GET and POST.
 
-- OS
-- Library version
-- ...
+## End to End Samples Overview
 
-### Installation
+The following end to end samples are available in this repository for different Flex Consumption app scenarios:
 
-(ideally very short)
-
-- npm install [package name]
-- mvn install
-- ...
-
-### Quickstart
-(Add steps to get up and running quickly)
-
-1. git clone [repository clone url]
-2. cd [repository name]
-3. ...
-
-
-## Demo
-
-A demo app is included to show how to use the project.
-
-To run the demo, follow these steps:
-
-(Add steps to start up the demo)
-
-1.
-2.
-3.
-
-## Resources
-
-(Any additional resources or related projects)
-
-- Link to supporting information
-- Link to similar sample
-- ...
+- [High scale HTTP function app to Event Hubs via VNet](./E2E/HTTP-VNET-EH/README.md): An HTTP function that accepts calls from any source, and then sends the body of those HTTP calls to a secure Event Hubs hub behind a VNet using VNet integration.
+- [Service Bus trigger behind a VNet](./E2E/SB-VNET/README.md): A Service Bus queue triggered function that triggers from a VNet restricted service bus via private endpoint. A Virtual Machine in the VNet is used to send messages.

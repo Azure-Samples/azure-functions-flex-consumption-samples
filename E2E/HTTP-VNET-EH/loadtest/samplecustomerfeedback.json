@@ -1,0 +1,122 @@
+[
+    {
+      "name": "Alice Smith",
+      "email": "alice.smith@example.com",
+      "customer_id": "C001",
+      "feedback": "I recently purchased the 'Organic Dog Food' from this online pet store and my dog absolutely loves it! The ingredients are high-quality and I feel good knowing that I'm feeding my furry friend something healthy."
+    },
+    {
+      "name": "Bob Jones",
+      "email": "bob.jones@example.com",
+      "customer_id": "C002",
+      "feedback": "The 'Bird Seed Mix' is a hit with my parakeets. They seem to enjoy it more than any other brand I've tried."
+    },
+    {
+      "name": "Carol Lee",
+      "email": "carol.lee@example.com",
+      "customer_id": "C003",
+      "feedback": "The 'Aquarium Filter' works like a charm. My fish tank has never been clearer!"
+    },
+    {
+      "name": "David Brown",
+      "email": "david.brown@example.com",
+      "customer_id": "C004",
+      "feedback": "The 'Rabbit Hay' is fresh and my rabbit loves it. I will definitely be reordering."
+    },
+    {
+      "name": "Eve Green",
+      "email": "eve.green@example.com",
+      "customer_id": "C005",
+      "feedback": "The 'Dog Chew Toy' is durable and keeps my dog entertained for hours."
+    },
+    {
+      "name": "Frank Wilson",
+      "email": "frank.wilson@example.com",
+      "customer_id": "C006",
+      "feedback": "The 'Cat Scratching Post' is sturdy and my cat uses it daily. It's saved my furniture from her claws!"
+    },
+    {
+      "name": "Grace Miller",
+      "email": "grace.miller@example.com",
+      "customer_id": "C007",
+      "feedback": "The 'Hamster Wheel' is quiet and smooth. My hamster uses it all the time."
+    },
+    {
+      "name": "Harry White",
+      "email": "harry.white@example.com",
+      "customer_id": "C008",
+      "feedback": "The 'Reptile Heat Lamp' maintains a consistent temperature. My reptile seems more active since I started using it."
+    },
+    {
+      "name": "Iris Clark",
+      "email": "iris.clark@example.com",
+      "customer_id": "C009",
+      "feedback": "The 'Horse Feed' is nutritious and my horse seems to really enjoy it."
+    },
+    {
+      "name": "Jack Taylor",
+      "email": "jack.taylor@example.com",
+      "customer_id": "C010",
+      "feedback": "The 'Fish Food' doesn't cloud the water and my fish seem healthier."
+    },
+    {
+      "name": "Kelly Moore",
+      "email": "kelly.moore@example.com",
+      "customer_id": "C011",
+      "feedback": "The 'Dog Leash' is strong and comfortable to hold during walks."
+    },
+    {
+      "name": "Lily Davis",
+      "email": "lily.davis@example.com",
+      "customer_id": "C012",
+      "feedback": "I was really disappointed with the 'Cat Litter' product from this online pet store. It didn't clump well and had a really strong odor. I had to switch to a different brand after just a few days of using it."
+    },
+    {
+      "name": "Mark Thomas",
+      "email": "mark.thomas@example.com",
+      "customer_id": "C013",
+      "feedback": "The 'Bird Cage' was smaller than expected and the bars are flimsy."
+    },
+    {
+      "name": "Nora Williams",
+      "email": "nora.williams@example.com",
+      "customer_id": "C014",
+      "feedback": "The 'Aquarium Decorations' started to fade after only a few weeks in the tank."
+    },
+    {
+      "name": "Oscar Johnson",
+      "email": "oscar.johnson@example.com",
+      "customer_id": "C015",
+      "feedback": "The 'Rabbit Bedding' is too dusty and causes my rabbit to sneeze."
+    },
+    {
+      "name": "Penny Martin",
+      "email": "penny.martin@example.com",
+      "customer_id": "C016",
+      "feedback": "The 'Dog Shampoo' left my dog's fur feeling dry and itchy."
+    },
+    {
+      "name": "Quinn Anderson",
+      "email": "quinn.anderson@example.com",
+      "customer_id": "C017",
+      "feedback": "The 'Cat Litter Box' is difficult to clean and the lid doesn't fit properly."
+    },
+    {
+      "name": "Ryan Thompson",
+      "email": "ryan.thompson@example.com",
+      "customer_id": "C018",
+      "feedback": "The 'Hamster Food' doesn't seem to be enjoyed by my hamster. He leaves most of it uneaten."
+    },
+    {
+      "name": "Sara Wilson",
+      "email": "sara.wilson@example.com",
+      "customer_id": "C019",
+      "feedback": "The 'Reptile Terrarium' arrived with a crack in the glass."
+    },
+    {
+      "name": "Tom Baker",
+      "email": "tom.baker@example.com",
+      "customer_id": "C020",
+      "feedback": "The 'Horse Brush' bristles fell out after only a few uses."
+    }
+  ]

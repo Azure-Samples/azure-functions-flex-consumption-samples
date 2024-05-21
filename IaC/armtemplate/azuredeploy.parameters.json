@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "[YOUR-LOCATION]"
+    },
+    "functionPlanName": {
+      "value": "[YOUR-AZURE-FUNCTION-PLAN-NAME]"
+    },
+    "functionAppName": {
+      "value": "[YOUR-AZURE-FUNCTION-APP-NAME]"
+    },
+    "functionAppRuntime": {
+      "value": "[YOUR-FUNCTION-APP-RUNTIME-NAME]"
+    },    
+    "functionAppRuntimeVersion": {
+      "value": "[YOUR-FUNCTION-APP-RUNTIME-VERSION]"
+    },
+    "storageAccountName": {
+      "value": "[YOUR-AZURE-STORAGE-ACCOUNT-NAME]"
+    },
+    "logAnalyticsName": {
+      "value": "[YOUR-LOG-ANALYTICS-WORKSPACE-NAME]"
+    },
+    "applicationInsightsName": {
+      "value": "[YOUR-APPLICATION-INSIGHTS-NAME]"
+    }
+  }
+}
+

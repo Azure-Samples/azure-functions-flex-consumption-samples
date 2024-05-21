@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: starter-dotnet8-flex-func
+metadata:
+  template: starter-dotnet8-flex-func@0.0.1-beta
+hooks:
+    postprovision:
+      windows:
+        shell: pwsh
+        run: cd ./http;../scripts/deploy.ps1
+        interactive: true
+        continueOnError: false
+      posix:
+        shell: sh
+        run: cd ./http;../scripts/deploy.sh
+        interactive: true
+        continueOnError: false

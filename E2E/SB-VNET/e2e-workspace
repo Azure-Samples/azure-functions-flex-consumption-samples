@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "./src"
+		},
+		{
+			"path": "./infra"
+		}
+	],
+	"settings": {
+		"debug.internalConsoleOptions": "neverOpen"
+	}
+}
