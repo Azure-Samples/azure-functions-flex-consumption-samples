@@ -27,10 +27,23 @@ Before you can run this sample, you must have the following:
 To set up this sample, follow these steps:
 
 1. Clone this repository to your local machine.
-2. in the root folder use [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to provision a new resource group with the environment name you provide and all the resources for the sample, then publish the code to the function app. It will also ask you for a password to be used for the Virtual Machine.
-```bash
-azd up
-```
+2. Sign in to Azure Developer CLI with the following command:
+
+  ```bash
+  azd auth login
+  ```
+
+3. Move into the `SB-VNET` folder using the following command:
+
+  ```bash
+  cd E2E/SB-VNET
+  ```
+
+4. Use [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to provision a new resource group with the environment name you provide and all the resources for the sample, then publish the code to the function app. It will also ask you for a password to be used for the Virtual Machine.
+
+  ```bash
+  azd up
+  ```
 
 ## Inspect the solution (optional)
 
