@@ -6,7 +6,6 @@ param tags object = {}
 param applicationInsightsName string = ''
 param appServicePlanId string
 param storageAccountName string
-param virtualNetworkSubnetId string = ''
 
 // Runtime Properties
 @allowed([
@@ -56,7 +55,6 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
         version: runtimeVersion
       }
     }
-    virtualNetworkSubnetId: virtualNetworkSubnetId
   }
 
   resource configAppSettings 'config' = {

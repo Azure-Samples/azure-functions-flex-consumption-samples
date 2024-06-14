@@ -440,4 +440,6 @@ FodyWeavers.xsd
 *.sln.iml
 samples/terraform/.terraform.lock.hcl
 .DS_Store
-samples/terraform/main.tfplan
+
+# Terraform
+*.tfplan

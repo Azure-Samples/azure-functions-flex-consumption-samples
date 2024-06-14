@@ -16,7 +16,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   sku: sku
   properties: {
     minimumTlsVersion: minimumTlsVersion
-    allowBlobPublicAccess: allowBlobPublicAccess
+    allowBlobPublicAccess: allowBlobPublicAccess    
     allowSharedKeyAccess: false
     networkAcls: {
       bypass: 'AzureServices'
@@ -37,3 +37,4 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 
 output name string = storage.name
 output primaryEndpoints object = storage.properties.primaryEndpoints
+output id string = storage.id

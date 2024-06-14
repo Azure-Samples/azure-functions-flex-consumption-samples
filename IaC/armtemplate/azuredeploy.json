@@ -110,11 +110,12 @@
       },
       "kind": "StorageV2",
       "properties": {
-          "accessTier": "Hot"
+          "accessTier": "Hot",
+          "allowSharedKeyAccess": false
       },
       "resources": [
         {
-          "type": "blobServices/containers",
+          "type": "containers",
           "apiVersion": "2023-01-01",
           "name": "[concat('default/', variables('deploymentStorageContainerName'))]",
           "dependsOn": [
