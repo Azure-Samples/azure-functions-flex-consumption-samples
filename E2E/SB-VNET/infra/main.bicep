@@ -14,6 +14,7 @@ param location string
 param vmAdminPassword string
 
 param processorServiceName string = ''
+param processorUserAssignedIdentityName string = ''
 param applicationInsightsName string = ''
 param appServicePlanName string = ''
 param logAnalyticsName string = ''
@@ -34,6 +35,17 @@ resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
+// User assigned managed identity to be used by the Function App to reach storage and service bus
+module processorUserAssignedIdentity './core/identity/userAssignedIdentity.bicep' = {
+  name: 'processorUserAssignedIdentity'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    identityName: !empty(processorUserAssignedIdentityName) ? processorUserAssignedIdentityName : '${abbrs.managedIdentityUserAssignedIdentities}processor-${resourceToken}'
+  }
+}
+
 // The application backend
 module processor './app/processor.bicep' = {
   name: 'processor'
@@ -47,6 +59,8 @@ module processor './app/processor.bicep' = {
     runtimeName: 'python'
     runtimeVersion: '3.10'
     storageAccountName: storage.outputs.name
+    identityId: processorUserAssignedIdentity.outputs.identityId
+    identityClientId: processorUserAssignedIdentity.outputs.identityClientId
     appSettings: {
     }
     virtualNetworkSubnetId: serviceVirtualNetwork.outputs.appSubnetID
@@ -76,7 +90,7 @@ module storageRoleAssignmentApi 'app/storage-Access.bicep' = {
   params: {
     storageAccountName: storage.outputs.name
     roleDefinitionID: storageRoleDefinitionId
-    principalID: processor.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+    principalID: processorUserAssignedIdentity.outputs.identityPrincipalId
   }
 }
 
@@ -115,7 +129,7 @@ module ServiceBusDataOwnerRoleAssignment 'app/servicebus-Access.bicep' = {
   params: {
     serviceBusNamespaceName: serviceBus.outputs.serviceBusNamespace
     roleDefinitionIDs: ServiceBusRoleDefinitionIds
-    principalID: processor.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+    principalID: processorUserAssignedIdentity.outputs.identityPrincipalId
   }
 }
 
@@ -150,7 +164,6 @@ module vm 'core/compute/vm.bicep' = {
   }
 }
 
-
 module servicePrivateEndpoint 'core/networking/privateEndpoint.bicep' = {
   name: 'servicePrivateEndpoint'
   scope: rg
@@ -162,7 +175,6 @@ module servicePrivateEndpoint 'core/networking/privateEndpoint.bicep' = {
     sbNamespaceId: serviceBus.outputs.namespaceId
   }
 }
-
 
 // Monitor application with Azure Monitor
 module monitoring './core/monitor/monitoring.bicep' = {

@@ -17,7 +17,7 @@ This sample demonstrates this, using Flex Consumption, a VNet, and Service Bus. 
 Before you can run this sample, you must have the following:
 
 - An Azure subscription that has been enabled for Flex Consumption apps
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) or [PowerShell Az Module](https://learn.microsoft.com/powershell/azure/new-azureps-module-az)
 - [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
 - [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows)
 
@@ -27,10 +27,37 @@ Before you can run this sample, you must have the following:
 To set up this sample, follow these steps:
 
 1. Clone this repository to your local machine.
-2. in the root folder use [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to provision a new resource group with the environment name you provide and all the resources for the sample, then publish the code to the function app. It will also ask you for a password to be used for the Virtual Machine.
-```bash
-azd up
-```
+2. Sign in to Azure Developer CLI with the following command:
+
+  ```bash
+  azd auth login
+  ```
+
+3. Sign in to either the Azure CLI or PowerShell (with Az module) to provide authentication for the hooks.
+
+  Azure CLI authentication in bash terminal:
+  
+  ```bash
+  az login
+  ```
+
+  PowerShell authentication in PowerShell terminal:
+
+  ```powershell
+  Connect-AzAccount
+  ```
+
+4. Move into the `SB-VNET` folder using the following command:
+
+  ```bash
+  cd E2E/SB-VNET
+  ```
+
+5. Use [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to provision a new resource group with the environment name you provide and all the resources for the sample, then publish the code to the function app. It will also ask you for a password to be used for the Virtual Machine.
+
+  ```bash
+  azd up
+  ```
 
 ## Inspect the solution (optional)
 

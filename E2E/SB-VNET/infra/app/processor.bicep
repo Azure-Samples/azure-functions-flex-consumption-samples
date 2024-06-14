@@ -13,6 +13,8 @@ param serviceBusQueueName string = ''
 param serviceBusNamespaceFQDN string = ''
 param instanceMemoryMB int = 2048
 param maximumInstanceCount int = 100
+param identityId string = ''
+param identityClientId string = ''
 
 module processor '../core/host/functions-flexconsumption.bicep' = {
   name: '${serviceName}-functions-python-module'
@@ -20,9 +22,14 @@ module processor '../core/host/functions-flexconsumption.bicep' = {
     name: name
     location: location
     tags: union(tags, { 'azd-service-name': serviceName })
+    identityType: 'UserAssigned'
+    identityId: identityId
     appSettings: union(appSettings,
       {
         ServiceBusConnection__fullyQualifiedNamespace: serviceBusNamespaceFQDN
+        ServiceBusConnection__clientId : identityClientId
+        ServiceBusConnection__credential : 'managedidentity'
+        AzureWebJobsStorage__clientId : identityClientId
         ServiceBusQueueName: serviceBusQueueName
       })
     applicationInsightsName: applicationInsightsName
