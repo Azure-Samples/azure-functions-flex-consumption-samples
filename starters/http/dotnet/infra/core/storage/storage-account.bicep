@@ -8,7 +8,7 @@ param kind string = 'StorageV2'
 param minimumTlsVersion string = 'TLS1_2'
 param sku object = { name: 'Standard_LRS' }
 
-resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = {
+resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: name
   location: location
   tags: tags
@@ -17,6 +17,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   properties: {
     minimumTlsVersion: minimumTlsVersion
     allowBlobPublicAccess: allowBlobPublicAccess
+    allowSharedKeyAccess: false
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Allow'

@@ -1,3 +1,16 @@
+---
+page_type: sample
+languages:
+- csharp
+- python
+- java
+- nodejs
+- typescript
+- json
+products:
+- azure-functions
+- azure
+---
 # Azure Functions Flex Consumption Samples
 
 This repository contains starters, infrastructure as code, and end to end samples for Azure Functions Flex Consumption. Check out [the Azure documentation to learn more about Azure Functions Flex Consumption](https://aka.ms/flexconsumption). 
@@ -20,5 +33,10 @@ These starters give you the code + IaC (Azure Dev CLI enabled) to build and depl
 
 The following end to end samples are available in this repository for different Flex Consumption app scenarios:
 
-- [High scale HTTP function app to Event Hubs via VNet](./E2E/HTTP-VNET-EH/README.md): An HTTP function that accepts calls from any source, and then sends the body of those HTTP calls to a secure Event Hubs hub behind a VNet using VNet integration.
-- [Service Bus trigger behind a VNet](./E2E/SB-VNET/README.md): A Service Bus queue triggered function that triggers from a VNet restricted service bus via private endpoint. A Virtual Machine in the VNet is used to send messages.
+- [High scale HTTP function app to Event Hubs via VNet](./E2E/HTTP-VNET-EH/README.md): An HTTP function written in .NET that accepts calls from any source, and then sends the body of those HTTP calls to a secure Event Hubs hub behind a VNet using VNet integration.
+- [Service Bus trigger behind a VNet](./E2E/SB-VNET/README.md): A Service Bus queue triggered function written in Python that triggers from a VNet restricted service bus via private endpoint. A Virtual Machine in the VNet is used to send messages.
+- [PDF to text processor](./E2E/BLOB-PDF/README.md): A blob triggered function using Event Grid written in Node that processes PDF documents into text at scale.
+
+---
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

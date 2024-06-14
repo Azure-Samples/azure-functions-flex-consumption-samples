@@ -16,11 +16,8 @@ param appServicePlanName string = ''
 param logAnalyticsName string = ''
 param resourceGroupName string = ''
 param storageAccountName string = ''
-param eventHubName string = ''
-param eventHubNamespaceName string = ''
-param vNetName string = ''
-param ehSubnetName string = ''
-param appSubnetName string = ''
+param processedTextContainerName string = 'processed-text'
+param unprocessedPdfContainerName string = 'unprocessed-pdf'
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
@@ -49,11 +46,7 @@ module processor './app/processor.bicep' = {
     appServicePlanId: processorAppServicePlan.outputs.id
     runtimeName: 'node'
     runtimeVersion: '20'
-    instanceMemoryMB: 2048
-    maximumInstanceCount: 100
     storageAccountName: storage.outputs.name
-    appSettings: {
-    }
   }
 }
 
@@ -83,19 +76,43 @@ module storage './core/storage/storage-account.bicep' = {
     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
     location: location
     tags: tags
-    containers: [{name: 'deploymentpackage'}]
+    containers: [
+      {name: 'deploymentpackage'}
+      {name: processedTextContainerName}
+      {name: unprocessedPdfContainerName}
+     ]
   }
 }
 
-var storageRoleDefinitionId  = 'ba92f5b4-2d11-453d-a403-e96b0029c9fe' //Storage Blob Data Contributor role
+var storageBlobDataOwnerRoleDefinitionId  = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' //Storage Blob Data Owner
+var storageAccountDataContributorRoleDefinitionId  = '17d1049b-9a84-46fb-8f53-869881c3d3ab' //Storage Account Contributor
+var storageQueueDataContributorRoleDefinitionId  = '974c5e8b-45b9-4653-ba55-5f855dd0fb88' //Storage Queue Data Contributor
 
 // Allow access from processor to storage account using a managed identity and Storage Blob Data Owner role
-module storageRoleAssignmentprocessor 'app/storage-Access.bicep' = {
-  name: 'storageRoleAssignmentprocessor'
+module storageBlobDataOwnerRoleAssignmentprocessor 'app/storage-Access.bicep' = {
+  name: 'storageBlobDataOwnerRoleAssignmentprocessor'
   scope: rg
   params: {
     storageAccountName: storage.outputs.name
-    roleDefinitionID: storageRoleDefinitionId
+    roleDefinitionID: storageBlobDataOwnerRoleDefinitionId
+    principalIDs: [processor.outputs.SERVICE_PROCESSOR_IDENTITY_PRINCIPAL_ID, principalId]
+  }
+}
+module storageAccountDataContributorRoleAssignmentprocessor 'app/storage-Access.bicep' = {
+  name: 'storageAccountDataContributorRoleAssignmentprocessor'
+  scope: rg
+  params: {
+    storageAccountName: storage.outputs.name
+    roleDefinitionID: storageAccountDataContributorRoleDefinitionId
+    principalIDs: [processor.outputs.SERVICE_PROCESSOR_IDENTITY_PRINCIPAL_ID, principalId]
+  }
+}
+module storageQueueDataContributorRoleAssignmentprocessor 'app/storage-Access.bicep' = {
+  name: 'storageQueueDataContributorRoleAssignmentprocessor'
+  scope: rg
+  params: {
+    storageAccountName: storage.outputs.name
+    roleDefinitionID: storageQueueDataContributorRoleDefinitionId
     principalIDs: [processor.outputs.SERVICE_PROCESSOR_IDENTITY_PRINCIPAL_ID, principalId]
   }
 }
@@ -113,10 +130,22 @@ module monitoring './core/monitor/monitoring.bicep' = {
   }
 }
 
+module eventgripdftopic './app/eventgrid.bicep' = {
+  name: 'eventgripdf'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    storageAccountId: storage.outputs.id
+  }
+}
+
 // App outputs
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString
 output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId
 output SERVICE_processor_BASE_URL string = processor.outputs.SERVICE_PROCESSOR_URI
 output RESOURCE_GROUP string = rg.name
-output AZURE_FUNCTION_NAME string = processor.outputs.SERVICE_PROCESSOR_NAME
+output AZURE_FUNCTION_APP_NAME string = processor.outputs.SERVICE_PROCESSOR_NAME
+output UNPROCESSED_PDF_CONTAINER_NAME string = unprocessedPdfContainerName
+output UNPROCESSED_PDF_SYSTEM_TOPIC_NAME string = eventgripdftopic.outputs.unprocessedPdfSystemTopicName

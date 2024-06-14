@@ -6,7 +6,6 @@ param tags object = {}
 param applicationInsightsName string = ''
 param appServicePlanId string
 param storageAccountName string
-param virtualNetworkSubnetId string = ''
 
 // Runtime Properties
 @allowed([
@@ -37,10 +36,6 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
   }
   properties: {
     serverFarmId: appServicePlanId
-    //workaround for now for app settings to be created properly by the config subresource
-    siteConfig: {
-      appSettings: []
-    }
     functionAppConfig: {
       deployment: {
         storage: {
@@ -60,7 +55,6 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
         version: runtimeVersion
       }
     }
-    virtualNetworkSubnetId: virtualNetworkSubnetId
   }
 
   resource configAppSettings 'config' = {
@@ -68,7 +62,6 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
     properties: union(appSettings,
       {
         AzureWebJobsStorage__accountName: stg.name
-        DEPLOYMENT_STORAGE_CONNECTION_STRING: stg.name
         APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
       })
   }

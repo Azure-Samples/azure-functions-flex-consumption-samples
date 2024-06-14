@@ -3,14 +3,14 @@ import { app, output } from '@azure/functions';
 import _ from 'lodash';
 
 const blobOutput = output.storageBlob({
-    connection: '4de3b4_STORAGE',
+    connection: 'PDFProcessorSTORAGE',
     path: 'processed-text/{name}.txt',
 });
 
 app.storageBlob('PDFProcessor', {
     path: 'unprocessed-pdf/{name}.pdf',
     source: 'EventGrid',
-    connection: '4de3b4_STORAGE',
+    connection: 'PDFProcessorSTORAGE',
     return: blobOutput,
     handler: async (blob, context) => {
         context.log(`Storage blob (using Event Grid) function processed blob "${context.triggerMetadata.name}" with size ${blob.length} bytes`);
