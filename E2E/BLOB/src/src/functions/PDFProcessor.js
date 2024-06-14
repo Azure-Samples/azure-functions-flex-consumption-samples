@@ -1,4 +1,4 @@
-import * as pdfjs from 'pdfjs-dist';
+import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { app, output } from '@azure/functions';
 import _ from 'lodash';
 
