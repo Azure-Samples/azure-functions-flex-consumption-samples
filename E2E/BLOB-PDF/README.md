@@ -34,9 +34,13 @@ azd up
 ## Inspect the solution (optional)
 
 1. Once the deployment is done, inspect the new resource group. The Flex Consumption function app and plan, storage, and App Insightshave been created and configured:
+
 ![List of resources created by the bicep template](./img/resources.png)
+
 2. The storage account has two extra containers in blob storage:
+
 ![Blob storage account with two extra containers](./img/blobcontainers.png)
+
 3. Open the `processed-text` and `unprocessed-pdf` containers, which are empty. 
 
 ## Test the solution
