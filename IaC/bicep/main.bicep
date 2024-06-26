@@ -6,8 +6,9 @@ targetScope = 'subscription'
 param environmentName string
 @minLength(1)
 @description('Primary location for all resources')
-@allowed(['australiaeast', 'eastasia', 'eastus', 'eastus2', 'northeurope', 'southcentralus', 'southeastasia', 'swedencentral', 'uksouth', 'westus2'])
+@allowed(['australiaeast', 'eastasia', 'eastus', 'eastus2', 'northeurope', 'southcentralus', 'southeastasia', 'swedencentral', 'uksouth', 'westus2', 'eastus2euap'])
 param location string 
+param appInsightsLocation string = ''
 param resourceGroupName string = ''
 param functionPlanName string = ''
 param functionAppName string = ''
@@ -37,6 +38,8 @@ var tags = {
   'azd-env-name': environmentName
 }
 
+var monitoringLocation = !empty(appInsightsLocation) ? appInsightsLocation : location
+
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   location: location
   tags: tags
@@ -48,7 +51,7 @@ module monitoring './core/monitor/monitoring.bicep' = {
   name: 'monitoring'
   scope: rg
   params: {
-    location: location
+    location: monitoringLocation
     tags: tags
     logAnalyticsName: !empty(logAnalyticsName) ? logAnalyticsName : '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
     applicationInsightsName: !empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}${resourceToken}'
