@@ -112,19 +112,25 @@
       "properties": {
           "accessTier": "Hot",
           "allowSharedKeyAccess": false
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2023-01-01",
+      "name": "[format('{0}/{1}/{2}', parameters('storageAccountName'), 'default', variables('deploymentStorageContainerName'))]",
+      "properties": {
+        "publicAccess": "None"
       },
-      "resources": [
-        {
-          "type": "containers",
-          "apiVersion": "2023-01-01",
-          "name": "[concat('default/', variables('deploymentStorageContainerName'))]",
-          "dependsOn": [
-            "[parameters('storageAccountName')]"
-          ],
-          "properties": {
-            "publicAccess": "None"
-          }
-        }
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]"
       ]
     },
     {
