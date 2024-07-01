@@ -18,7 +18,7 @@ This ARM sample deploys a Flex Consumption app. This ARM file is used to create 
 ### Modify the parameters file
 
 Create a copy and modify the parameters file `azuredeploy.parameters.json` to specify the values for the parameters. The parameters file contains the following parameters that you must specify values for before you can deploy the app:
-* **location** - the location where the assets will be created. 
+* **location** - the location where the assets will be created. You can find the supported regions with the `az functionapp list-flexconsumption-locations` command of the Azure CLI.
 * **functionPlanName** - a unique name for the Flex Consumption app plan
 * **functionAppName** - a unique name for the Flex Consumption app instance
 * **functionAppRuntime** - the runtime to be used for your Flex Consumption app.

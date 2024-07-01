@@ -19,7 +19,7 @@ This Terraform sample deploys a Flex Consumption app. This Terraform file is use
 Create a copy and modify the parameters file `variables.tfvars` to specify the values for the parameters. The parameters file contains the following parameters that you must specify values for before you can deploy the app:
 
 * **resourceGroupName** - the name of the resource group to be created for your app
-* **location** - the location where the assets will be created. 'australiaeast', 'eastasia', 'eastus', 'eastus2', 'northeurope', 'southcentralus', 'southeastasia', 'swedencentral', 'uksouth', 'westus2' during early access to the public preview.
+* **location** - the location where the assets will be created. You can find the supported regions with the `az functionapp list-flexconsumption-locations` command of the Azure CLI.
 * **applicationInsightsName** - a unique name for the Application Insights instance
 * **logAnalyticsName** - a unique name for the Log Analytics Workspace
 * **functionAppName** - a unique name for the Flex Consumption app instance
