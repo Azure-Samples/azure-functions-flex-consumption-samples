@@ -19,7 +19,7 @@ This bicep sample deploys a Flex Consumption app. This Bicep file is used to cre
 Create a copy and modify the parameters file `main.bicepparam` to specify the values for the parameters. The parameters file contains the following parameters that you must specify values for before you can deploy the app:
 
 * **environmentName** - a unique name to be used for the resources being created.
-* **location** - the location where the assets will be created. 'australiaeast', 'eastasia', 'eastus', 'eastus2', 'northeurope', 'southcentralus', 'southeastasia', 'swedencentral', 'uksouth', 'westus2' during early access to the public preview.
+* **location** - the location where the assets will be created. You can find the supported regions with the `az functionapp list-flexconsumption-locations` command of the Azure CLI.
 
 Here is an example `main.bicepparam` that you can modify:
 
