@@ -7,6 +7,12 @@ param environmentName string
 
 @minLength(1)
 @description('Primary location for all resources')
+@allowed(['australiaeast', 'eastasia', 'eastus', 'eastus2', 'northeurope', 'southcentralus', 'southeastasia', 'swedencentral', 'uksouth', 'westus2', 'eastus2euap'])
+@metadata({
+  azd: {
+    type: 'location'
+  }
+})
 param location string
 
 // Optional parameters to override the default azd resource naming conventions. Update the main.parameters.json file to provide values. e.g.,:
