@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
-name: SB-VNET
+name: sb-vnet-python-flex-func
 metadata:
-    template: sb-vnet@0.0.2-beta
+    template: sb-vnet-python-flex-func@0.0.2-beta
 hooks:
     postprovision:
       windows:
