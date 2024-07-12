@@ -1,25 +1,38 @@
-# Flex Consumption - Azure Functions triggered from Service Bus via VNet Integration
+---
+description: This end-to-end C# sample demonstrates the secure triggering of a Flex Consumption plan app from a Storage Bus instance secured in a virtual network.
+page_type: sample
+products:
+- azure-functions
+- azure
+urlFragment: E2E/SB-VNET
+languages:
+- python
+- bicep
+- azdeveloper
+---
+
+# Flex Consumption plan - Service Bus trigger using virtual network integration | Azure Functions
 
 A common scenario that Azure Functions can be used for is for the processing of queue based events. For example, a list of batch processing jobs is queued up with instructions for machine learning processing. The function app can do some ML inferencing before completing the message in the queue.
 
-This sample demonstrates this, using Flex Consumption, a VNet, and Service Bus. You can use it to observe two key Flex Consumption features:
+This sample demonstrates a function app running in a Flex Consumption plan that connects to Service Bus running in a virtual network. This sample demonstrates these two key features of the Flex Consumption plan:
 
 * **High scale**. A low concurency of 1 is configured for the function app in the `host.json` file. Once messages are loaded into Service Bus and the app is started, you can see how it scales to one app instance per message simultaneously.
-* **VNet Integration**. The Service Bus that this Flex Consumption app reads events from is secured behind a private endpoint. The function app can read events from it because it is configured with VNet integration. All connections to Service Bus and to the storage account associated with the Flex Consumption app also use managed identity connections instead of connection strings.
+* **Virtual newtork integration**. The Service Bus that this Flex Consumption app reads events from is secured behind a private endpoint. The function app can read events from it because it is configured with VNet integration. All connections to Service Bus and to the storage account associated with the Flex Consumption app also use managed identity connections instead of connection strings.
 
 ![Diagram showing Service Bus with a private endpoint and an Azure Functions Flex Consumption app triggering from it via VNet integration](./img/SB-VNET.png)
 
-> [!CAUTION]
+> [!IMPORTANT]
 > This sample creates several resources. Make sure to delete the resource group after testing to minimize charges!
 
 ## Prerequisites
 
 Before you can run this sample, you must have the following:
 
-- An Azure subscription
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) or [PowerShell Az Module](https://learn.microsoft.com/powershell/azure/new-azureps-module-az)
-- [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
-- [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows)
+* An Azure subscription
+* [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) or [PowerShell Az Module](https://learn.microsoft.com/powershell/azure/new-azureps-module-az)
+* [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
+* [Azure Dev CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows)
 
 
 ## Provision the solution on Azure
@@ -53,7 +66,7 @@ To set up this sample, follow these steps:
   cd E2E/SB-VNET
   ```
 
-5. Use [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to provision a new resource group with the environment name you provide and all the resources for the sample, then publish the code to the function app. It will also ask you for a password to be used for the Virtual Machine.
+5. Use [Azure Dev CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to provision a new resource group with the environment name you provide and all the resources for the sample, then publish the code to the function app. It will also ask you for a password to be used for the Virtual Machine.
 
   ```bash
   azd up
@@ -93,6 +106,6 @@ azd down
 
 For more information on Azure Functions, Service Bus, and VNet integration, see the following resources:
 
-* [Azure Functions documentation](https://docs.microsoft.com/en-us/azure/azure-functions/)
-* [Azure Service Bus documentation](https://docs.microsoft.com/en-us/azure/service-bus/)
-* [Azure Virtual Network documentation](https://docs.microsoft.com/en-us/azure/virtual-network/)
+* [Azure Functions documentation](https://docs.microsoft.com/azure/azure-functions/)
+* [Azure Service Bus documentation](https://docs.microsoft.com/azure/service-bus/)
+* [Azure Virtual Network documentation](https://docs.microsoft.com/azure/virtual-network/)

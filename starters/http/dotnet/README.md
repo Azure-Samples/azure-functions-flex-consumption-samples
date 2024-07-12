@@ -1,21 +1,37 @@
-# Azure Functions
+---
+description: This sample template provides a basic Azure Functions project in C# (HTTP triggers) that's ready to run locally and can be easily deployed to Azure.
+page_type: sample
+products:
+- azure-functions
+- azure
+urlFragment: starters/http/dotnet
+languages:
+- csharp
+- bicep
+- azdeveloper
+---
 
-## Starter template (HTTP Triggered .NET 8 Isolated C# Functions, Flex Consumption)
+# Starter template for Flex Consumption plan apps | Azure Functions
 
-This sample template provides an "empty starting point" function that is ready to run and deploy Azure easily.  
+This sample template provides a set of basic HTTP trigger functions in C# (isolated process mode) that are ready to run locally and can be easily deployed to a function app in Azure Functions.  
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=575770869)
 
-## Run on your local environment
+## Run in your local environment
 
-### Pre-reqs
+The project is designed to run on your local computer, provided you have met the [required prerequisites](#prerequisites). You can run the project locally in these environments:
 
-1) [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) 
-2) [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cmacos%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
++ [Using Azure Functions Core Tools (CLI)](#using-azure-functions-core-tools-cli)
++ [Using Visual Studio](#using-visual-studio)
++ [Using Visual Studio Code](#using-visual-studio-code)
 
-4) Start Azurite storage emulator. See [this page](https://learn.microsoft.com/azure/storage/common/storage-use-azurite) for how to configure and start the Azurite emulator for Local Storage.
+### Prerequisites
 
-### Using Functions CLI
++ [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) 
++ [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?tabs=v4%2Cmacos%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
++ Start Azurite storage emulator. See [this page](https://learn.microsoft.com/azure/storage/common/storage-use-azurite) for how to configure and start the Azurite emulator for Local Storage.
+
+### Using Azure Functions Core Tools (CLI)
 
 1) Open a new terminal and do the following:
 
