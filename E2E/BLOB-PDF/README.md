@@ -1,14 +1,27 @@
-# Flex Consumption - PDF to text processor
+---
+description: This end-to-end JavaScript sample showcases an event-based Blob storage triggered function that converts PDF documents to text at scale.
+page_type: sample
+products:
+- azure-functions
+- azure
+urlFragment: E2E/BLOB-PDF
+languages:
+- javascript
+- bicep
+- azdeveloper
+---
 
-Processing files from blob storage is a key scenario for Azure Functions. This sample showcases a blob triggered function using Event Grid written in Node that processes PDF documents into text at scale.
+# Flex Consumption plan - PDF to text processor | Azure Functions
 
-This solution creates two containers in blob storage, `unprocessed-pdf` and `processed-text`. An event grid based blob triggered function written in Node is executed for each PDF file placed in the `unprocessed-pdf` folder, converts it to text using the [PDF.js](https://www.npmjs.com/package/pdfjs-dist) library, and saves the text to the `processed-text` folder.
+Processing binary files from Azure Blob Storage is a key scenario for Azure Functions. This end-to-end JavaScript sample showcases an event-based Blob storage triggered function that converts PDF documents to text at scale.
 
-This event grid based blob trigger reduces latency by triggering your function instantly as changes occur in the container. As such, it is the only blob trigger source type that Flex Consumption supports.
+This solution creates two containers in blob storage, `unprocessed-pdf` and `processed-text`. An Event Grid-based Blob storage triggered function written in JavaScript is executed when a PDF file is added to the `unprocessed-pdf` container, converts the PDF to text using the [PDF.js](https://www.npmjs.com/package/pdfjs-dist) library, and saves the text to the `processed-text` container.
 
-![Diagram showing customers uploading PDF files into the unprocessed-pdf blob storage container and Azure Functions Flex Consumption processing them into PDF and sending the text to the processed-text container](./img/BLOB-PDF.png)
+Using an Event Grid-based Blob storage trigger reduces latency by triggering your function instantly as changes occur in the container. This type of Blob storage trigger is the only type of Blob storage trigger that can be used when running in a Flex Consumption plan.
 
-> [!CAUTION]
+![Diagram showing customers uploading PDF files into the unprocessed-pdf Blob storage container and Azure Functions Flex Consumption processing them into PDF and sending the text to the processed-text container](./img/BLOB-PDF.png)
+
+> [!IMPORTANT]
 > This sample creates several resources. Make sure to delete the resource group after testing to minimize charges!
 
 ## Prerequisites
@@ -16,16 +29,16 @@ This event grid based blob trigger reduces latency by triggering your function i
 Before you can run this sample, you must have the following:
 
 - An Azure subscription
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
-- [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows)
+- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)
+- [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
+- [Azure Dev CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows)
 
 ## Provision the solution on Azure
 
 To set up this sample, follow these steps:
 
 1. Clone this repository to your local machine.
-2. in the root folder use [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to provision a new resource group with the environment name you provide and all the resources for the sample.
+2. in the root folder use the [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to provision a new resource group with the environment name you provide and all the resources for the sample.
 
 ```bash
 azd up

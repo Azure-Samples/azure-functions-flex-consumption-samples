@@ -1,32 +1,45 @@
-# Flex Consumption - Azure Functions HTTP to Event Hubs via VNet Integration
+---
+description: This end-to-end C# sample demonstrates the secure ingestion and processing of HTTP-based inputs in a Flex Consumption plan app using an Event Hubs instance secured in a virtual network.
+page_type: sample
+products:
+- azure-functions
+- azure
+urlFragment: E2E/HTTP-VNET-EH
+languages:
+- csharp
+- bicep
+- azdeveloper
+---
 
-A common scenario that Azure Functions can be used for is for the ingestion and processing of HTTP based events. For example, an HTTP endpoint that is part of a larger API for ingesting customer feedabck and support information, or a flash sale that needs to ingest customer sign ups interested in the sale. The function app can do some validation and transformation of the info before sending it to a secure endpoint for further downstream processing.
+# Flex Consumption plan - HTTP trigger to Event Hubs using VNET Integration | Azure Functions
 
-This sample demonstrates this, using Flex Consumption, a VNet, and Event Hubs. You can use it to observe two key Flex Consumption features:
+A common scenario for Azure Functions is the ingestion and processing of HTTP-based inputs. For example, an HTTP endpoint that is part of a larger API for ingesting customer feedabck and support information, or a flash sale that needs to ingest customer sign ups interested in the sale. The function app can do some validation and transformation of the provided information before sending it to a secure endpoint for further downstream processing.
+
+This sample demonstrates a function app running in a Flex Consumption plan that connects to Event Hubs running in a virtual network. This sample demonstrates these two key features of the Flex Consumption plan:
 
 * **High scale**. Once deployed you can run load tests against the app to see how it handles thousands of requests per second.
-* **VNet Integration**. The Event Hubs that this Flex Consumption app sends events to is secured behind a private endpoint. The function app can send events to it because it is configured with VNet integration.
+* **Virtual network Integration**. The Event Hubs instance to which the app sends events is secured behind a private endpoint. The function app can send events to it because it is configured to use virtual network integration.
 
 ![Diagram showing customer feedback HTTP calls into an Azure Functions Flex Consumption app then sending that data to Event Hubs through a VNet, for further downstream processing](./img/HTTP-VNET-EH.png)
 
-> [!CAUTION]
-> This sample creates several resources and a maxed out Event Hubs Standard namespace with 40 througput units. Make sure to delete the resource group after testing to minimize charges.
+> [!IMPORTANT]
+> This sample creates several resources, includin an Event Hubs Standard namespace that is maxed-out with 40 througput units. Make sure to delete the resource group after testing to minimize charges.
 
 ## Prerequisites
 
 Before you can run this sample, you must have the following:
 
-- An Azure subscription
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [Azure Functions Core Tools](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
-- [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows)
+* An Azure subscription
+* [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)
+* [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local#install-the-azure-functions-core-tools)
+* [Azure Dev CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
 
 ## Provision the solution on Azure
 
 To set up this sample, follow these steps:
 
 1. Clone this repository to your local machine.
-2. in the root folder use [Azure Dev CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows) to provision a new resource group with the environment name you provide and all the resources for the sample.
+2. in the root folder use [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) to provision a new resource group with the environment name you provide and all the resources for the sample.
 
 ```bash
 azd up
@@ -66,6 +79,6 @@ azd down
 
 For more information on Azure Functions, Event Hubs, and VNet integration, see the following resources:
 
-* [Azure Functions documentation](https://docs.microsoft.com/en-us/azure/azure-functions/)
-* [Azure Event Hubs documentation](https://docs.microsoft.com/en-us/azure/event-hubs/)
-* [Azure Virtual Network documentation](https://docs.microsoft.com/en-us/azure/virtual-network/)
+* [Azure Functions documentation](https://docs.microsoft.com/azure/azure-functions/)
+* [Azure Event Hubs documentation](https://docs.microsoft.com/azure/event-hubs/)
+* [Azure Virtual Network documentation](https://docs.microsoft.com/azure/virtual-network/)
