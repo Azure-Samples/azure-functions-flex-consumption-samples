@@ -15,10 +15,6 @@ param environmentName string
 })
 param location string
 
-// @secure()
-// @description('A password for the admin login of the virtual machine')
-// param vmAdminPassword string
-
 param processorServiceName string = ''
 param processorUserAssignedIdentityName string = ''
 param applicationInsightsName string = ''
@@ -150,15 +146,6 @@ module serviceVirtualNetwork 'core/networking/vnet.bicep' = {
   }
 }
 
-module bastion 'core/networking/bastion.bicep' = {
-  name: 'bastion'
-  scope: rg
-  params: {
-    location: location
-    tags: tags
-    bastionSubnetId: serviceVirtualNetwork.outputs.bastionSubnetID
-  }
-}
 
 // module vm 'core/compute/vm.bicep' = {
 //   name: 'vm'
