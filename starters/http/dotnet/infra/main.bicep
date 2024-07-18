@@ -107,13 +107,25 @@ module appServicePlan './core/host/appserviceplan.bicep' = {
 }
 
 // Virtual Network & private endpoint
-module serviceVirtualNetwork 'core/networking/vnet.bicep' = {
+module serviceVirtualNetwork 'app/vnet.bicep' = {
   name: 'serviceVirtualNetwork'
   scope: rg
   params: {
     location: location
     tags: tags
     vNetName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
+  }
+}
+
+module servicePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = {
+  name: 'servicePrivateEndpoint'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    virtualNetworkName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
+    subnetName: serviceVirtualNetwork.outputs.sbSubnetName
+    resourceName: storage.outputs.name
   }
 }
 

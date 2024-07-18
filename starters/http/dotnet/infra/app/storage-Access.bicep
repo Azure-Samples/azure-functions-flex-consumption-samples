@@ -13,6 +13,7 @@ resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-
   properties: {
     roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionID)
     principalId: principalID
+    principalType: 'ServicePrincipal' // Workaround for https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-template#new-service-principal
   }
 }
 
