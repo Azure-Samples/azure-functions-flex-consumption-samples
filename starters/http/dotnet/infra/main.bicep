@@ -22,8 +22,6 @@ param appServicePlanName string = ''
 param logAnalyticsName string = ''
 param resourceGroupName string = ''
 param storageAccountName string = ''
-param serviceBusQueueName string = ''
-param serviceBusNamespaceName string = ''
 param vNetName string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
@@ -58,16 +56,14 @@ module processor './app/processor.bicep' = {
     tags: tags
     applicationInsightsName: monitoring.outputs.applicationInsightsName
     appServicePlanId: appServicePlan.outputs.id
-    runtimeName: 'python'
-    runtimeVersion: '3.10'
+    runtimeName: 'dotnet-isolated'
+    runtimeVersion: '8.0'
     storageAccountName: storage.outputs.name
     identityId: processorUserAssignedIdentity.outputs.identityId
     identityClientId: processorUserAssignedIdentity.outputs.identityClientId
     appSettings: {
     }
     virtualNetworkSubnetId: serviceVirtualNetwork.outputs.appSubnetID
-    serviceBusQueueName: serviceBus.outputs.serviceBusQueueName
-    serviceBusNamespaceFQDN: serviceBus.outputs.serviceBusNamespaceFQDN
   }
 }
 
@@ -110,31 +106,6 @@ module appServicePlan './core/host/appserviceplan.bicep' = {
   }
 }
 
-// Service Bus
-module serviceBus 'core/message/servicebus.bicep' = {
-  name: 'serviceBus'
-  scope: rg
-  params: {
-    location: location
-    tags: tags
-    serviceBusNamespaceName: !empty(serviceBusNamespaceName) ? serviceBusNamespaceName : '${abbrs.serviceBusNamespaces}${resourceToken}'
-    serviceBusQueueName : !empty(serviceBusQueueName) ? serviceBusQueueName : '${abbrs.serviceBusNamespacesQueues}${resourceToken}'
-  }
-}
-
-var ServiceBusRoleDefinitionIds  = ['090c5cfd-751d-490a-894a-3ce6f1109419', '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0'] //Azure Service Bus Data Owner and Data Receiver roles
-
-// Allow access from processor to Service Bus using a managed identity and Azure Service Bus Data Owner and Data Receiver roles
-module ServiceBusDataOwnerRoleAssignment 'app/servicebus-Access.bicep' = {
-  name: 'ServiceBusDataOwnerRoleAssignment'
-  scope: rg
-  params: {
-    serviceBusNamespaceName: serviceBus.outputs.serviceBusNamespace
-    roleDefinitionIDs: ServiceBusRoleDefinitionIds
-    principalID: processorUserAssignedIdentity.outputs.identityPrincipalId
-  }
-}
-
 // Virtual Network & private endpoint
 module serviceVirtualNetwork 'core/networking/vnet.bicep' = {
   name: 'serviceVirtualNetwork'
@@ -143,29 +114,6 @@ module serviceVirtualNetwork 'core/networking/vnet.bicep' = {
     location: location
     tags: tags
     vNetName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
-  }
-}
-
-
-// module vm 'core/compute/vm.bicep' = {
-//   name: 'vm'
-//   scope: rg
-//   params: {
-//     adminpassword: vmAdminPassword
-//     location: location
-//     VMsubnetId: serviceVirtualNetwork.outputs.vmSubnetID
-//   }
-// }
-
-module servicePrivateEndpoint 'core/networking/privateEndpoint.bicep' = {
-  name: 'servicePrivateEndpoint'
-  scope: rg
-  params: {
-    location: location
-    tags: tags
-    virtualNetworkName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
-    subnetName: serviceVirtualNetwork.outputs.sbSubnetName
-    sbNamespaceId: serviceBus.outputs.namespaceId
   }
 }
 
