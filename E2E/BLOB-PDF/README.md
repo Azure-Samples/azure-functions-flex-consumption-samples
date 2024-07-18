@@ -4,7 +4,7 @@ page_type: sample
 products:
 - azure-functions
 - azure
-urlFragment: E2E/BLOB-PDF
+urlFragment: event-blob-trigger-to-pdf
 languages:
 - javascript
 - bicep

@@ -4,7 +4,7 @@ page_type: sample
 products:
 - azure
 - azure-resource-manager
-urlFragment: IaC/terraform
+urlFragment: terraform-based-deployment
 languages:
 - terraform
 ---

@@ -4,7 +4,7 @@ page_type: sample
 products:
 - azure-functions
 - azure
-urlFragment: E2E/HTTP-VNET-EH
+urlFragment: http-trigger-to-event-hubs
 languages:
 - csharp
 - bicep
