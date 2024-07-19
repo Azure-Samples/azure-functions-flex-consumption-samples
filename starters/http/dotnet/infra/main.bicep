@@ -125,7 +125,7 @@ module servicePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = {
     location: location
     tags: tags
     virtualNetworkName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
-    subnetName: serviceVirtualNetwork.outputs.sbSubnetName
+    subnetName: serviceVirtualNetwork.outputs.peSubnetName
     resourceName: storage.outputs.name
   }
 }

@@ -25,7 +25,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' existing 
 var blobPrivateDNSZoneName = format('privatelink.blob.{0}', environment().suffixes.storage)
 
 // Private DNS Zones
-resource sbPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+resource blobPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: blobPrivateDNSZoneName
   location: 'global'
   tags: tags
@@ -36,8 +36,8 @@ resource sbPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 }
 
 // Virtual Network Links
-resource sbPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
-  parent: sbPrivateDnsZone
+resource blobPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+  parent: blobPrivateDnsZone
   name: 'link_to_${toLower(virtualNetworkName)}'
   location: 'global'
   tags: tags
@@ -50,14 +50,14 @@ resource sbPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/v
 }
 
 // Private Endpoints
-resource sbPrivateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
-  name: 'blobPrivateEndpoint'
+resource blobPrivateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
+  name: 'blob-PrivateEndpoint'
   location: location
   tags: tags
   properties: {
     privateLinkServiceConnections: [
       {
-        name: 'sbPrivateEndpointConnection'
+        name: 'blobPrivateEndpointConnection'
         properties: {
           privateLinkServiceId: storageAccount.id
           groupIds: [
@@ -72,19 +72,17 @@ resource sbPrivateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
   }
 }
 
-resource sbPrivateDnsZoneGroupName 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-01-01' = {
-  parent: sbPrivateEndpoint
+resource blobPrivateDnsZoneGroupName 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-01-01' = {
+  parent: blobPrivateEndpoint
   name: 'sbPrivateDnsZoneGroup'
   properties: {
     privateDnsZoneConfigs: [
       {
-        name: 'dnsConfig'
+        name: 'storageBlobARecord'
         properties: {
-          privateDnsZoneId: sbPrivateDnsZone.id
+          privateDnsZoneId: blobPrivateDnsZone.id
         }
       }
     ]
   }
 }
-
-
