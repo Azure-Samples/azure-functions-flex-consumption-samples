@@ -15,7 +15,7 @@ namespace Company.Function
         }
 
         [Function("httpget")]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
+        public IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
         {
             return new OkObjectResult("Welcome to Azure Functions!");
         }

@@ -1,5 +1,4 @@
 param name string
-param dashboardName string
 param location string = resourceGroup().location
 param tags object = {}
 
@@ -13,15 +12,6 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   properties: {
     Application_Type: 'web'
     WorkspaceResourceId: logAnalyticsWorkspaceId
-  }
-}
-
-module applicationInsightsDashboard 'applicationinsights-dashboard.bicep' = {
-  name: 'application-insights-dashboard'
-  params: {
-    name: dashboardName
-    location: location
-    applicationInsightsName: applicationInsights.name
   }
 }
 
