@@ -17,7 +17,7 @@ namespace Company.Function
         }
 
         [Function("httppostbody")]        
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
+        public IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequest req,
             [FromBody] Person person)
         {
             return new OkObjectResult(person);
