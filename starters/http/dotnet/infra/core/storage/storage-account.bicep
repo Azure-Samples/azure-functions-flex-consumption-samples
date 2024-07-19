@@ -3,6 +3,8 @@ param location string = resourceGroup().location
 param tags object = {}
 
 param allowBlobPublicAccess bool = false
+@allowed(['Enabled', 'Disabled'])
+param publicNetworkAccess string = 'Enabled'
 param containers array = []
 param kind string = 'StorageV2'
 param minimumTlsVersion string = 'TLS1_2'
@@ -17,6 +19,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   properties: {
     minimumTlsVersion: minimumTlsVersion
     allowBlobPublicAccess: allowBlobPublicAccess
+    publicNetworkAccess: publicNetworkAccess
     allowSharedKeyAccess: false
     networkAcls: {
       bypass: 'AzureServices'

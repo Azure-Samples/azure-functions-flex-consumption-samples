@@ -13,7 +13,6 @@ param location string = resourceGroup().location
 
 param tags object = {}
 
-
 // Virtual Network
 resource vnet 'Microsoft.Network/virtualNetworks@2021-08-01' existing = {
   name: virtualNetworkName
@@ -23,10 +22,11 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' existing 
   name: resourceName
 }
 
+var blobPrivateDNSZoneName = format('privatelink.blob.{0}', environment().suffixes.storage)
 
 // Private DNS Zones
 resource sbPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: 'blob.internal'
+  name: blobPrivateDNSZoneName
   location: 'global'
   tags: tags
   properties: {}

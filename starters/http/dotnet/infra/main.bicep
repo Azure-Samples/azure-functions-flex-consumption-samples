@@ -76,6 +76,7 @@ module storage './core/storage/storage-account.bicep' = {
     location: location
     tags: tags
     containers: [{name: 'deploymentpackage'}]
+    publicNetworkAccess: 'Disabled'
   }
 }
 

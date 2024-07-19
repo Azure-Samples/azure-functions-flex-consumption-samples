@@ -15,7 +15,7 @@ param identityId string = ''
 param identityClientId string = ''
 
 module processor '../core/host/functions-flexconsumption.bicep' = {
-  name: '${serviceName}-functions-python-module'
+  name: '${serviceName}-functions-module'
   params: {
     name: name
     location: location
