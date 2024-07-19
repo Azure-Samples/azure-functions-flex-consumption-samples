@@ -4,7 +4,7 @@ page_type: sample
 products:
 - azure-functions
 - azure
-urlFragment: E2E/SB-VNET
+urlFragment: service-bus-trigger-virtual-network
 languages:
 - python
 - bicep

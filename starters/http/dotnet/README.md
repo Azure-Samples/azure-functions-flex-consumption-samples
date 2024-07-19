@@ -4,7 +4,7 @@ page_type: sample
 products:
 - azure-functions
 - azure
-urlFragment: starters/http/dotnet
+urlFragment: starter-http-trigger-csharp
 languages:
 - csharp
 - bicep
