@@ -2,16 +2,9 @@
 
 name: blob-pdf-javascript-flex-func
 metadata:
-    template: blob-pdf-javascript-flex-func@0.0.1-beta
-hooks:
-    postprovision:
-      windows:
-        shell: pwsh
-        run: cd ./src;../scripts/deploy.ps1
-        interactive: true
-        continueOnError: false
-      posix:
-        shell: sh
-        run: cd ./src;../scripts/deploy.sh
-        interactive: true
-        continueOnError: false
+    template: blob-pdf-javascript-flex-func@0.0.2-beta
+services:
+  processor:
+    project: ./src/
+    language: js
+    host: function

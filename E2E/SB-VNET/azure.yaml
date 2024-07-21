@@ -3,15 +3,8 @@
 name: sb-vnet-python-flex-func
 metadata:
     template: sb-vnet-python-flex-func@0.0.2-beta
-hooks:
-    postprovision:
-      windows:
-        shell: pwsh
-        run: cd ./src;../scripts/deploy.ps1
-        interactive: true
-        continueOnError: false
-      posix:
-        shell: sh
-        run: cd ./src;../scripts/deploy.sh
-        interactive: true
-        continueOnError: false
+services:
+  processor:
+    project: ./src/
+    language: python
+    host: function
