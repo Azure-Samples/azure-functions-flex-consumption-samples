@@ -34,6 +34,7 @@ module processor '../core/host/functions-flexconsumption.bicep' = {
     virtualNetworkSubnetId: virtualNetworkSubnetId
     instanceMemoryMB: instanceMemoryMB 
     maximumInstanceCount: maximumInstanceCount
+    identityClientId: identityClientId
   }
 }
 
