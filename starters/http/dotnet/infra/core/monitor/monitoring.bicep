@@ -2,6 +2,7 @@ param logAnalyticsName string
 param applicationInsightsName string
 param location string = resourceGroup().location
 param tags object = {}
+param disableLocalAuth bool = false
 
 module logAnalytics 'loganalytics.bicep' = {
   name: 'loganalytics'
@@ -19,6 +20,7 @@ module applicationInsights 'applicationinsights.bicep' = {
     location: location
     tags: tags
     logAnalyticsWorkspaceId: logAnalytics.outputs.id
+    disableLocalAuth: disableLocalAuth
   }
 }
 
