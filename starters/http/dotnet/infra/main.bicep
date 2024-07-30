@@ -23,6 +23,7 @@ param logAnalyticsName string = ''
 param resourceGroupName string = ''
 param storageAccountName string = ''
 param vNetName string = ''
+param disableLocalAuth bool = true
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
@@ -139,6 +140,20 @@ module monitoring './core/monitor/monitoring.bicep' = {
     tags: tags
     logAnalyticsName: !empty(logAnalyticsName) ? logAnalyticsName : '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
     applicationInsightsName: !empty(applicationInsightsName) ? applicationInsightsName : '${abbrs.insightsComponents}${resourceToken}'
+    disableLocalAuth: disableLocalAuth  
+  }
+}
+
+var monitoringRoleDefinitionId = '3913510d-42f4-4e42-8a64-420c390055eb' // Monitoring Metrics Publisher role ID
+
+// Allow access from processor to application insights using a managed identity
+module appInsightsRoleAssignmentApi './core/monitor/appinsights-access.bicep' = {
+  name: 'appInsightsRoleAssignmentPRocessor'
+  scope: rg
+  params: {
+    appInsightsName: monitoring.outputs.applicationInsightsName
+    roleDefinitionID: monitoringRoleDefinitionId
+    principalID: processorUserAssignedIdentity.outputs.identityPrincipalId
   }
 }
 

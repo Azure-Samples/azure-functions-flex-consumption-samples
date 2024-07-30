@@ -14,6 +14,8 @@ param maximumInstanceCount int = 100
 param identityId string = ''
 param identityClientId string = ''
 
+var applicationInsightsIdentity = 'ClientId=${identityClientId};Authorization=AAD'
+
 module processor '../core/host/functions-flexconsumption.bicep' = {
   name: '${serviceName}-functions-module'
   params: {
@@ -25,6 +27,7 @@ module processor '../core/host/functions-flexconsumption.bicep' = {
     appSettings: union(appSettings,
       {
         AzureWebJobsStorage__clientId : identityClientId
+        APPLICATIONINSIGHTS_AUTHENTICATION_STRING: applicationInsightsIdentity
       })
     applicationInsightsName: applicationInsightsName
     appServicePlanId: appServicePlanId
@@ -34,6 +37,7 @@ module processor '../core/host/functions-flexconsumption.bicep' = {
     virtualNetworkSubnetId: virtualNetworkSubnetId
     instanceMemoryMB: instanceMemoryMB 
     maximumInstanceCount: maximumInstanceCount
+    identityClientId: identityClientId
   }
 }
 
