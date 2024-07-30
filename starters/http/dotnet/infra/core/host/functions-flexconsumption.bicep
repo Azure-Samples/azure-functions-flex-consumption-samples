@@ -11,7 +11,6 @@ param virtualNetworkSubnetId string = ''
 param identityType string
 @description('User assigned identity name')
 param identityId string
-param identityClientId string
 
 // Runtime Properties
 @allowed([
