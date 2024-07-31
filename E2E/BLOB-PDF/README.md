@@ -30,7 +30,6 @@ Before you can run this sample, you must have the following:
 
 - An Azure subscription
 - [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)
-- [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
 - [Azure Dev CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows)
 
 ## Provision the solution on Azure
