@@ -33,16 +33,23 @@ The project is designed to run on your local computer, provided you have met the
 
 ### Using Azure Functions Core Tools (CLI)
 
-1) Open a new terminal and do the following:
+1) Open a new terminal and go into the **http** directory
 
-```bash
-cd http
-func start
-```
+2) Create a file named `local.settings.json` and add the following:
 
-2) Test a Web hook or GET using the browser to open http://localhost:7071/api/http
+  ```json
+  {
+    "IsEncrypted": false,
+    "Values": {
+      "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+      "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated"
+    }
+  }
+  ```
 
-3) Test a POST using your favorite REST client, e.g. [RestClient in VS Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), PostMan, curl.  `test.http` has been provided to run this quickly.
+3) Test a Web hook or GET using the browser to open http://localhost:7071/api/httpget
+
+4) Test a POST using your favorite REST client, e.g. [RestClient in VS Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), PostMan, curl.  `test.http` has been provided to run this quickly.
 
 Terminal:
 
