@@ -30,12 +30,7 @@ The project is designed to run on your local computer, provided you have met the
 + [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) 
 + [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?tabs=v4%2Cmacos%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
 + Start Azurite storage emulator. See [this page](https://learn.microsoft.com/azure/storage/common/storage-use-azurite) for how to configure and start the Azurite emulator for Local Storage.
-
-### Using Azure Functions Core Tools (CLI)
-
-1) Open a new terminal and go into the **http** directory
-
-2) Create a file named `local.settings.json` and add the following:
++ Create a file named `local.settings.json` in **http** directory and add the following:
 
   ```json
   {
@@ -47,14 +42,18 @@ The project is designed to run on your local computer, provided you have met the
   }
   ```
 
-3) Start the function app
-  ```bash
-  func start
-  ```
+### Using Azure Functions Core Tools (CLI)
 
-4) Test a Web hook or GET using the browser to open http://localhost:7071/api/httpget
+1) Open a new terminal and do the following:
 
-5) Test a POST using your favorite REST client, e.g. [RestClient in VS Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), PostMan, curl.  `test.http` has been provided to run this quickly.
+```bash
+cd http
+func start
+```
+
+2) Test a Web hook or GET using the browser to open http://localhost:7071/api/httpget
+
+3) Test a POST using your favorite REST client, e.g. [RestClient in VS Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), PostMan, curl.  `test.http` has been provided to run this quickly.
 
 Terminal:
 
@@ -102,8 +101,9 @@ content-type: application/json
 
 1) Open this folder in a new terminal
 2) Open VS Code by entering `code .` in the terminal
-3) Press Run/Debug (F5) to run in the debugger
-4) Use same approach above to test using an HTTP REST client
+3) Add a **.vscode** folder by running *"Azure Functions: Initialize project for use with VS Code"* in the Command Pallete
+4) Press Run/Debug (F5) to run in the debugger
+5) Use same approach above to test using an HTTP REST client
 
 ## Source Code
 
