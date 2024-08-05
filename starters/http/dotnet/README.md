@@ -47,9 +47,14 @@ The project is designed to run on your local computer, provided you have met the
   }
   ```
 
-3) Test a Web hook or GET using the browser to open http://localhost:7071/api/httpget
+3) Start the function app
+  ```bash
+  func start
+  ```
 
-4) Test a POST using your favorite REST client, e.g. [RestClient in VS Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), PostMan, curl.  `test.http` has been provided to run this quickly.
+4) Test a Web hook or GET using the browser to open http://localhost:7071/api/httpget
+
+5) Test a POST using your favorite REST client, e.g. [RestClient in VS Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), PostMan, curl.  `test.http` has been provided to run this quickly.
 
 Terminal:
 
