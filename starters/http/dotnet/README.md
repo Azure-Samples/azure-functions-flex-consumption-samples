@@ -101,9 +101,10 @@ content-type: application/json
 
 1) Open this folder in a new terminal
 2) Open VS Code by entering `code .` in the terminal
-3) Add a **.vscode** folder by running *"Azure Functions: Initialize project for use with VS Code"* in the Command Pallete
-4) Press Run/Debug (F5) to run in the debugger
-5) Use same approach above to test using an HTTP REST client
+3) Make sure the Azure Functions extension is installed
+4) Add a **.vscode** folder by running *"Azure Functions: Initialize project for use with VS Code"* in the Command Pallete (select `starters\http\dotnet\http` project when prompted to set a default)
+5) Press Run/Debug (F5) to run in the debugger
+6) Use same approach above to test using an HTTP REST client
 
 ## Source Code
 
