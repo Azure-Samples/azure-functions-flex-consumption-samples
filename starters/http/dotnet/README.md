@@ -54,41 +54,12 @@ func start
 2) Test a Web hook or GET using the browser to open http://localhost:7071/api/httpget
 
 3) Test a POST using your favorite REST client, e.g. [RestClient in VS Code](https://marketplace.visualstudio.com/items?itemName=humao.rest-client), PostMan, curl.  `test.http` has been provided to run this quickly.
-
-Terminal:
+Or in a new terminal run the following:
 
 ```bash
 curl -i -X POST http://localhost:7071/api/httppostbody \
   -H "Content-Type: text/json" \
   --data-binary "@testdata.json"
-```
-
-testdata.json
-
-```json
-{
-    "person": 
-    {
-        "name": "Awesome Developer",
-        "age": 25 
-    }
-}
-```
-
-test.http
-
-```bash
-
-POST http://localhost:7071/api/httppostbody HTTP/1.1
-content-type: application/json
-
-{
-    "person": 
-    {
-        "name": "Awesome Developer",
-        "age": 25 
-    }
-}
 ```
 
 ### Using Visual Studio
@@ -101,9 +72,10 @@ content-type: application/json
 
 1) Open this folder in a new terminal
 2) Open VS Code by entering `code .` in the terminal
-3) Add a **.vscode** folder by running *"Azure Functions: Initialize project for use with VS Code"* in the Command Pallete
-4) Press Run/Debug (F5) to run in the debugger
-5) Use same approach above to test using an HTTP REST client
+3) Make sure the [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) is installed
+4) Add required files to the `.vscode` folder by opening the command palette using `Crtl+Shift+P` (or `Cmd+Shift+P` on Mac) and selecting *"Azure Functions: Initialize project for use with VS Code"* (select `starters\http\dotnet\http` project when prompted to set a default)
+5) Press Run/Debug (F5) to run in the debugger
+6) Use same approach above to test using an HTTP REST client
 
 ## Source Code
 
