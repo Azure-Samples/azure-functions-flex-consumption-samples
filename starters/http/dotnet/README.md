@@ -73,7 +73,7 @@ curl -i -X POST http://localhost:7071/api/httppostbody \
 1) Open this folder in a new terminal
 2) Open VS Code by entering `code .` in the terminal
 3) Make sure the [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) is installed
-4) Add needed files to the **.vscode** folder by opening the command palette (`Crtl+Shift+P/Cmd+Shift+P` and selecting *"Azure Functions: Initialize project for use with VS Code"* (select `starters\http\dotnet\http` project when prompted to set a default)
+4) Add required files to the `.vscode` folder by opening the command palette using `Crtl+Shift+P` (or `Cmd+Shift+P` on Mac) and selecting *"Azure Functions: Initialize project for use with VS Code"* (select `starters\http\dotnet\http` project when prompted to set a default)
 5) Press Run/Debug (F5) to run in the debugger
 6) Use same approach above to test using an HTTP REST client
 
