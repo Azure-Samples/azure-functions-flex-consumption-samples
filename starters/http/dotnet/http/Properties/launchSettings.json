@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "chatgpt": {
-      "commandName": "Project",
-      "commandLineArgs": "--port 7071"
-    }
-  }
-}
