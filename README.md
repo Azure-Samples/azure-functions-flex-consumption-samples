@@ -15,9 +15,9 @@ products:
 
 This repository contains starters, infrastructure as code, and end to end samples for Azure Functions Flex Consumption. Check out [the Azure documentation to learn more about Azure Functions Flex Consumption](https://aka.ms/flexconsumption). 
 
-## Starter Templates Overview (Code + AZD)
+## Starter Samples Overview (Code + AZD)
 
-These starters give you the code + IaC (Azure Dev CLI enabled) to build and deploy simple/common scenarios to Flex Consumption.
+These starters samples give you the code + IaC (Azure Dev CLI enabled) to build and deploy simple/common scenarios to Flex Consumption.
 
 - [HTTP (.NET 8 Isolated / C#)](https://github.com/Azure-Samples/functions-quickstart-dotnet-azd): Contains a sample for building and deploying simple HTTP services that handle GET and POST with C#.
 - [HTTP (Python 3.11)](https://github.com/Azure-Samples/functions-quickstart-python-http-azd): Contains a sample for building and deploying simple HTTP services that handle GET and POST with Python.
