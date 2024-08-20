@@ -1,16 +1,3 @@
-$output = azd env get-values
-
-foreach ($line in $output) {
-    if (!($line)){
-      break
-    }
-      $name = $line.Split('=')[0]
-      $value = $line.Split('=')[1].Trim('"')
-      Set-Item -Path "env:\$name" -Value $value
-}
-
-Write-Host "Environment variables set."
-
 $tools = @("az")
 
 foreach ($tool in $tools) {
@@ -21,7 +8,7 @@ foreach ($tool in $tools) {
 }
 
 #Get the function blobs_extension key
-$blobs_extension=$(az functionapp keys list -n ${AZURE_FUNCTION_APP_NAME} -g ${RESOURCE_GROUP} --query "systemKeys.blobs_extension" -o tsv)
+$blobs_extension=$(az functionapp keys list -n ${env:AZURE_FUNCTION_APP_NAME} -g ${env:RESOURCE_GROUP} --query "systemKeys.blobs_extension" -o tsv)
 
 # Build the endpoint URL with the function name and extension key and create the event subscription
 $endpointUrl="https://" + $env:AZURE_FUNCTION_APP_NAME + ".azurewebsites.net/runtime/webhooks/blobs?functionName=Host.Functions.PDFProcessor&code=" + $env:blobs_extension
