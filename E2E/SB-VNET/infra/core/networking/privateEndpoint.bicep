@@ -2,7 +2,7 @@
 @description('Specifies the name of the virtual network.')
 param virtualNetworkName string
 
-@description('Specifies the name of the subnet which contains the virtual machine.')
+@description('Specifies the name of the subnet for the Service Bus private endpoint.')
 param subnetName string
 
 @description('Specifies the resource id of the Service Bus namespace.')

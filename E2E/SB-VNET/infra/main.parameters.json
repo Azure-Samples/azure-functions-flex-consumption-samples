@@ -7,6 +7,10 @@
     },
     "location": {
       "value": "${AZURE_LOCATION}"
+    },
+    "useVM": {
+      "value": "${USE_VM}"
     }
+
   }
 }

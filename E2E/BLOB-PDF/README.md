@@ -45,7 +45,7 @@ To set up this sample, follow these steps:
 azd up
 ```
 
-Alternatively, you can opt-out of a VNet being used in the sample. To do so, use `azd env` to configure AZURE_USE_VNET to false before running `azd up`:
+Alternatively, you can opt-out of a VNet being used in the sample. To do so, use `azd env` to configure `AZURE_USE_VNET` to `false` before running `azd up`:
 
 ```bash
 azd env set AZURE_USE_VNET false

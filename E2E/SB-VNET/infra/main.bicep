@@ -15,9 +15,12 @@ param environmentName string
 })
 param location string
 
+@description('Specifies if a virtual machine should be created in the virtual network.')
+param useVM bool = false
+
 @secure()
 @description('A password for the admin login of the virtual machine')
-param vmAdminPassword string
+param vmAdminPassword string = ''
 
 param processorServiceName string = ''
 param processorUserAssignedIdentityName string = ''
@@ -147,26 +150,27 @@ module serviceVirtualNetwork 'core/networking/vnet.bicep' = {
     location: location
     tags: tags
     vNetName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
+    useVM: useVM
   }
 }
 
-module bastion 'core/networking/bastion.bicep' = {
+module bastion 'core/networking/bastion.bicep' = if (useVM){
   name: 'bastion'
   scope: rg
   params: {
     location: location
     tags: tags
-    bastionSubnetId: serviceVirtualNetwork.outputs.bastionSubnetID
+    bastionSubnetId: useVM ? serviceVirtualNetwork.outputs.bastionSubnetID : ''
   }
 }
 
-module vm 'core/compute/vm.bicep' = {
+module vm 'core/compute/vm.bicep' = if (useVM){
   name: 'vm'
   scope: rg
   params: {
     adminpassword: vmAdminPassword
     location: location
-    VMsubnetId: serviceVirtualNetwork.outputs.vmSubnetID
+    VMsubnetId: useVM ? serviceVirtualNetwork.outputs.vmSubnetID : ''
   }
 }
 
