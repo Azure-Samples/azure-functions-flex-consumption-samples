@@ -71,10 +71,11 @@ To set up this sample, follow these steps:
   azd up
   ```
 
-You can optionally have a VM created in the virtual network that you can use to generate messages from into Service Bus. To do so, use `azd env` to configure USE_VM to `true` before running `azd up`:
+You can optionally have a VM created in the virtual network that you can use to generate messages from into Service Bus. To do so, use `azd env` to configure USE_VM to `true` and set `vmAdminPassword` to a password of preference before running `azd up`:
 
 ```bash
-azd env set USE_VM false
+azd env set USE_VM true
+azd env set vmAdminPassword <REPLACE THIS WITH A PASSWORD FOR THE VM>
 azd up
 ```
 

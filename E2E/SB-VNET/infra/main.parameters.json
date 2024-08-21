@@ -10,7 +10,9 @@
     },
     "useVM": {
       "value": "${USE_VM}"
+    },
+    "vmAdminPassword": {
+      "value": "${vmAdminPassword}"
     }
-
   }
 }
