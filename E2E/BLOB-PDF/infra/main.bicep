@@ -14,7 +14,7 @@ param environmentName string
   }
 })
 param location string
-
+param useVnet bool = true
 param processorServiceName string = ''
 param applicationInsightsDashboardName string = ''
 param applicationInsightsName string = ''
@@ -31,6 +31,7 @@ param principalId string = ''
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
+param vNetName string = ''
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
@@ -40,7 +41,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
 }
 
 // The application backend powered by Flex Consumption Function
-module processor './app/processor.bicep' = {
+module processor 'app/processor.bicep' = {
   name: 'processor'
   scope: rg
   params: {
@@ -53,6 +54,7 @@ module processor './app/processor.bicep' = {
     runtimeName: 'node'
     runtimeVersion: '20'
     storageAccountName: storage.outputs.name
+    virtualNetworkSubnetId: useVnet ? vnet.outputs.appSubnetID : ''
   }
 }
 
@@ -75,7 +77,7 @@ module processorAppServicePlan 'core/host/appserviceplan.bicep' = {
 }
 
 // Backing storage for Azure functions backend processor
-module storage './core/storage/storage-account.bicep' = {
+module storage 'core/storage/storage-account.bicep' = {
   name: 'storage'
   scope: rg
   params: {
@@ -87,6 +89,31 @@ module storage './core/storage/storage-account.bicep' = {
       {name: processedTextContainerName}
       {name: unprocessedPdfContainerName}
      ]
+     networkAcls: useVnet ? {
+        defaultAction: 'Deny'
+      } : {}
+  }
+}
+
+module vnet './app/vnet.bicep' = if (useVnet) {
+  name: 'vnet'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    vNetName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
+  }
+}
+
+module servicePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = if (useVnet) {
+  name: 'servicePrivateEndpoint'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    virtualNetworkName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
+    subnetName: useVnet ? vnet.outputs.peSubnetName : ''
+    resourceName: storage.outputs.name
   }
 }
 

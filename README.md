@@ -32,6 +32,7 @@ The following end to end samples are available in this repository for different 
 - [High scale HTTP function app to Event Hubs via VNet](./E2E/HTTP-VNET-EH/README.md): An HTTP function written in .NET that accepts calls from any source, and then sends the body of those HTTP calls to a secure Event Hubs hub behind a VNet using VNet integration.
 - [Service Bus trigger behind a VNet](./E2E/SB-VNET/README.md): A Service Bus queue triggered function written in Python that triggers from a VNet restricted service bus via private endpoint. A Virtual Machine in the VNet is used to send messages.
 - [PDF to text processor](./E2E/BLOB-PDF/README.md): A blob triggered function using Event Grid written in Node that processes PDF documents into text at scale.
+- [SignalR Bidirectional chatroom sample](https://github.com/aspnet/AzureSignalR-samples/tree/main/samples/DotnetIsolated-ClassBased): This is a chatroom walkthrough sample that demonstrates bidirectional message pushing between Azure SignalR Service and Azure Functions in a serverless scenario using the Flex Consumption hosting plan and .NET.
 
 ## IaC samples Overview
 

@@ -4,7 +4,7 @@ name: blob-pdf-javascript-flex-func
 metadata:
     template: blob-pdf-javascript-flex-func@0.0.3-beta
 hooks:
-    postup:
+    postdeploy:
       windows:
         shell: pwsh
         run: ./scripts/post-up.ps1

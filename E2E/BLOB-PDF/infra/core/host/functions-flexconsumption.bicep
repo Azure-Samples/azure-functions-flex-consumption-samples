@@ -21,6 +21,8 @@ param appSettings object = {}
 param instanceMemoryMB int = 2048
 param maximumInstanceCount int = 100
 
+param virtualNetworkSubnetId string = ''
+
 resource stg 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
@@ -55,8 +57,8 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
         version: runtimeVersion
       }
     }
+    virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
   }
-
   resource configAppSettings 'config' = {
     name: 'appsettings'
     properties: union(appSettings,
