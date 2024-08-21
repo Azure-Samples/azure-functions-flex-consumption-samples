@@ -34,7 +34,6 @@ Before you can run this sample, you must have the following:
 * [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?tabs=v4%2Clinux%2Ccsharp%2Cportal%2Cbash#install-the-azure-functions-core-tools)
 * [Azure Dev CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd?tabs=winget-windows%2Cbrew-mac%2Cscript-linux&pivots=os-windows)
 
-
 ## Provision the solution on Azure
 
 To set up this sample, follow these steps:
@@ -72,6 +71,14 @@ To set up this sample, follow these steps:
   azd up
   ```
 
+You can optionally have a VM created in the virtual network that you can use to generate messages from into Service Bus. To do so, use `azd env` to configure USE_VM to `true` and set `vmAdminPassword` to a password of preference before running `azd up`:
+
+```bash
+azd env set USE_VM true
+azd env set vmAdminPassword <REPLACE THIS WITH A PASSWORD FOR THE VM>
+azd up
+```
+
 ## Inspect the solution (optional)
 
 1. Once the deployment is done, inspect the new resource group. The Flex Consumption function app and plan, storage, App Insights, Service Bus, and networking services have been created and configured:
@@ -83,14 +90,18 @@ To set up this sample, follow these steps:
 1. An outbound virtual network integration has been created in your Function App into another subnet in the same VNet. This means it can access the Service Bus namespace. You can check this in the function app's `Networking` tab in the `Outbound traffic configuration` section:
 ![Function App Networking tab](./img/func-vnet.png)
 1. Open the Application Insights instance that was created by the Bicep deploy. Open the `Live metrics` tab to monitor for live events. Notice that it can't connect to the application, or shows only one 'server' online. This is expected, because the Flex Consupmtion app is scaled to down as there's no traffic or executions happening yet.
-1. A virtual machine and bastion were configured on the same VNet so you can access service bus from it. The user name is `sb-vnet-vm-user` and the password is the one you provided when provisioning the environment. You can optionally use this VM to test sending messages to Service Bus from inside the VNet. Or you can add your own machine's IP address to [the Service Bus networking configurations](https://learn.microsoft.com/azure/service-bus-messaging/service-bus-ip-filtering) and send messages to service bus from your own machine. 
+1. If you set `USE_VM`, a virtual machine and bastion were configured on the same VNet so you can access service bus from it. The user name is `sb-vnet-vm-user` and the password is the one you provided when provisioning the environment. You can optionally use this VM to test sending messages to Service Bus from inside the VNet. Or you can add your own machine's IP address to [the Service Bus networking configurations](https://learn.microsoft.com/azure/service-bus-messaging/service-bus-ip-filtering) and send messages to service bus from your own machine.
 1. Inspect [the host.json file](./src/host.json) and notice that Service Bus' `maxConcurrentCalls` has been set to 1. This makes the per instance concurrency be 1 so your function will scale to multiple instances to handle messages put in the Service Bus queue.
 1. Inspect the [function_app.py](./src/function_app.py) and notice there is a delay of 30 seconds in the code, to simulate that the each message would take 30 seconds to complete being processed.
 
 ## Test the solution
 
-1. In the Azure portal remote into the VM using bastion. The user name is `sb-vnet-vm-user` and the password is the one you provided when provisioning the environment.
-1. Install [Service Bus explorer](https://github.com/paolosalvatori/ServiceBusExplorer/releases) on the VM, and use it to connect to your service bus instance and send messages to the queue. For example, use the sender in Service Bus Explorer to send 1,000 messages.
+1. You can use the Service Bus Explorer in the Azure Portal to send messages to the Service Bus queue. You'll need to configure your client IP Address in the Service Bus firewall first:
+![Service Bus networking page adding client IP address to firewall](./img/sb-addclientip.png)
+You can then follow [https://learn.microsoft.com/en-us/azure/service-bus-messaging/explorer](Use Service Bus Explorer to run data operations on Service Bus) to send messages and peek messages from the queue.
+![Service Bus explorer showing messages in the queue](./img/sb-messages.png)
+1. Alternatively, if you set `USE_VM` and want to use the Virtual Machine In the Azure portal, you can remote into the VM using bastion. The user name is `sb-vnet-vm-user` and the password is the one you provided when provisioning the environment. Install [Service Bus explorer](https://github.com/paolosalvatori/ServiceBusExplorer/releases) on the VM, and use it to connect to your service bus instance and send messages to the queue.
+1. Use the Service Bus Explorer in the portal or app to send 1,000 messages.
 1. Open Application Insights live metrics and notice the number of instances ('servers online'). Notice your app scaling the number of instances to handle processing the messages. Given there is a purpuseful [30 second delay in the app code](./src/function_app.py#L12) you should see the messages being processed in 30 seconds intervals once the the app's maximum instance count (default of 100) is reached. The sample telemetry should also show that your messages are triggering the function, and making their way from Service Bus through the VNet into the function app for processing.
 ![Live metrics available](./img/live-metrics.png)
 
