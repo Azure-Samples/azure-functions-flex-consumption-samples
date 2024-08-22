@@ -13,6 +13,8 @@ param eventHubFQDN string = ''
 param eventHubName string = ''
 param instanceMemoryMB int = 2048
 param maximumInstanceCount int = 100
+param deploymentStorageContainerName string
+
 
 module api '../core/host/functions-flexconsumption.bicep' = {
   name: '${serviceName}-functions-dotnet-isolated-module'
@@ -33,6 +35,7 @@ module api '../core/host/functions-flexconsumption.bicep' = {
     instanceMemoryMB: instanceMemoryMB //needed for Flex
     maximumInstanceCount: maximumInstanceCount //needed for Flex
     virtualNetworkSubnetId: virtualNetworkSubnetId
+    deploymentStorageContainerName: deploymentStorageContainerName
   }
 }
 

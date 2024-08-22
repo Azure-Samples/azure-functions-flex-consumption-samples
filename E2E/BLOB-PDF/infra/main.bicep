@@ -25,11 +25,16 @@ param storageAccountName string = ''
 param processedTextContainerName string = 'processed-text'
 param unprocessedPdfContainerName string = 'unprocessed-pdf'
 
+
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
+// Generate a unique function app name if one is not provided.
+var appName = !empty(processorServiceName) ? processorServiceName : '${abbrs.webSitesFunctions}${resourceToken}'
+// Generate a unique container name that will be used for deployments.
+var deploymentStorageContainerName = 'app-package-${take(appName, 32)}-${take(resourceToken, 7)}'
 var tags = { 'azd-env-name': environmentName }
 param vNetName string = ''
 
@@ -45,7 +50,7 @@ module processor 'app/processor.bicep' = {
   name: 'processor'
   scope: rg
   params: {
-    name: !empty(processorServiceName) ? processorServiceName : '${abbrs.webSitesFunctions}processor-${resourceToken}'
+    name: appName
     serviceName: 'processor'
     location: location
     tags: tags
@@ -54,6 +59,7 @@ module processor 'app/processor.bicep' = {
     runtimeName: 'node'
     runtimeVersion: '20'
     storageAccountName: storage.outputs.name
+    deploymentStorageContainerName: deploymentStorageContainerName
     virtualNetworkSubnetId: useVnet ? vnet.outputs.appSubnetID : ''
   }
 }
@@ -85,7 +91,7 @@ module storage 'core/storage/storage-account.bicep' = {
     location: location
     tags: tags
     containers: [
-      {name: 'deploymentpackage'}
+      {name: deploymentStorageContainerName}
       {name: processedTextContainerName}
       {name: unprocessedPdfContainerName}
      ]

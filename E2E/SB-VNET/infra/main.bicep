@@ -36,6 +36,10 @@ param vNetName string = ''
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
+// Generate a unique function app name if one is not provided.
+var appName = !empty(processorServiceName) ? processorServiceName : '${abbrs.webSitesFunctions}${resourceToken}'
+// Generate a unique container name that will be used for deployments.
+var deploymentStorageContainerName = 'app-package-${take(appName, 32)}-${take(resourceToken, 7)}'
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -60,7 +64,7 @@ module processor './app/processor.bicep' = {
   name: 'processor'
   scope: rg
   params: {
-    name: !empty(processorServiceName) ? processorServiceName : '${abbrs.webSitesFunctions}processor-${resourceToken}'
+    name: appName
     location: location
     tags: tags
     applicationInsightsName: monitoring.outputs.applicationInsightsName
@@ -75,6 +79,7 @@ module processor './app/processor.bicep' = {
     virtualNetworkSubnetId: serviceVirtualNetwork.outputs.appSubnetID
     serviceBusQueueName: serviceBus.outputs.serviceBusQueueName
     serviceBusNamespaceFQDN: serviceBus.outputs.serviceBusNamespaceFQDN
+    deploymentStorageContainerName: deploymentStorageContainerName
   }
 }
 
@@ -86,7 +91,7 @@ module storage './core/storage/storage-account.bicep' = {
     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
     location: location
     tags: tags
-    containers: [{name: 'deploymentpackage'}]
+    containers: [{name: deploymentStorageContainerName}]
   }
 }
 

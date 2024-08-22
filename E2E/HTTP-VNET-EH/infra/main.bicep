@@ -16,9 +16,6 @@ param environmentName string
 param location string
 
 // Optional parameters to override the default azd resource naming conventions. Update the main.parameters.json file to provide values. e.g.,:
-// "resourceGroupName": {
-//      "value": "myGroupName"
-// }
 param apiServiceName string = ''
 param applicationInsightsDashboardName string = ''
 param applicationInsightsName string = ''
@@ -38,6 +35,10 @@ param principalId string = ''
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
+// Generate a unique function app name if one is not provided.
+var appName = !empty(apiServiceName) ? apiServiceName : '${abbrs.webSitesFunctions}${resourceToken}'
+// Generate a unique container name that will be used for deployments.
+var deploymentStorageContainerName = 'app-package-${take(appName, 32)}-${take(resourceToken, 7)}'
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -51,7 +52,7 @@ module api './app/api.bicep' = {
   name: 'api'
   scope: rg
   params: {
-    name: !empty(apiServiceName) ? apiServiceName : '${abbrs.webSitesFunctions}api-${resourceToken}'
+    name: appName
     serviceName: 'api'
     location: location
     tags: tags
@@ -62,6 +63,7 @@ module api './app/api.bicep' = {
     instanceMemoryMB: 2048
     maximumInstanceCount: 100
     storageAccountName: storage.outputs.name
+    deploymentStorageContainerName: deploymentStorageContainerName
     appSettings: {
     }
     virtualNetworkSubnetId: serviceVirtualNetwork.outputs.appSubnetID
@@ -96,7 +98,7 @@ module storage './core/storage/storage-account.bicep' = {
     name: !empty(storageAccountName) ? storageAccountName : '${abbrs.storageStorageAccounts}${resourceToken}'
     location: location
     tags: tags
-    containers: [{name: 'deploymentpackage'}]
+    containers: [{name: deploymentStorageContainerName}]
   }
 }
 

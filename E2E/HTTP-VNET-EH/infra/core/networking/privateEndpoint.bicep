@@ -15,7 +15,7 @@ param tags object = {}
 
 
 // Virtual Network
-resource vnet 'Microsoft.Network/virtualNetworks@2021-08-01' existing = {
+resource vnet 'Microsoft.Network/virtualNetworks@2024-01-01' existing = {
   name: virtualNetworkName
 }
 
@@ -45,7 +45,7 @@ resource ehPrivateDnsZoneVirtualNetworkLink 'Microsoft.Network/privateDnsZones/v
 }
 
 // Private Endpoints
-resource ehPrivateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
+resource ehPrivateEndpoint 'Microsoft.Network/privateEndpoints@2024-01-01' = {
   name: 'ehPrivateEndpoint'
   location: location
   tags: tags
@@ -67,7 +67,7 @@ resource ehPrivateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
   }
 }
 
-resource ehPrivateDnsZoneGroupName 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-01-01' = {
+resource ehPrivateDnsZoneGroupName 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2024-01-01' = {
   parent: ehPrivateEndpoint
   name: 'ehPrivateDnsZoneGroup'
   properties: {
