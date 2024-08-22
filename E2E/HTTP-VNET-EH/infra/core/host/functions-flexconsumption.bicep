@@ -21,6 +21,8 @@ param kind string = 'functionapp,linux'
 param appSettings object = {}
 param instanceMemoryMB int = 2048
 param maximumInstanceCount int = 100
+param deploymentStorageContainerName string
+
 
 resource stg 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
@@ -41,7 +43,7 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
       deployment: {
         storage: {
           type: 'blobContainer'
-          value: '${stg.properties.primaryEndpoints.blob}deploymentpackage'
+          value: '${stg.properties.primaryEndpoints.blob}${deploymentStorageContainerName}'
           authentication: {
             type: 'SystemAssignedIdentity'
           }

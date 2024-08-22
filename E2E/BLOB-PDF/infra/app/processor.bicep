@@ -11,6 +11,7 @@ param instanceMemoryMB int = 2048
 param maximumInstanceCount int = 100
 param appSettings object = {}
 param virtualNetworkSubnetId string
+param deploymentStorageContainerName string
 
 module processor '../core/host/functions-flexconsumption.bicep' = {
   name: '${serviceName}-functions-node-module'
@@ -26,6 +27,7 @@ module processor '../core/host/functions-flexconsumption.bicep' = {
     instanceMemoryMB: instanceMemoryMB 
     maximumInstanceCount: maximumInstanceCount 
     virtualNetworkSubnetId: virtualNetworkSubnetId
+    deploymentStorageContainerName:deploymentStorageContainerName
     appSettings: union(appSettings,
       {
         PDFProcessorSTORAGE__accountName: storageAccountName

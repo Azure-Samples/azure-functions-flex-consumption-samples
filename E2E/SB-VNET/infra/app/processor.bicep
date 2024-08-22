@@ -15,6 +15,7 @@ param instanceMemoryMB int = 2048
 param maximumInstanceCount int = 100
 param identityId string = ''
 param identityClientId string = ''
+param deploymentStorageContainerName string
 
 module processor '../core/host/functions-flexconsumption.bicep' = {
   name: '${serviceName}-functions-python-module'
@@ -40,6 +41,7 @@ module processor '../core/host/functions-flexconsumption.bicep' = {
     virtualNetworkSubnetId: virtualNetworkSubnetId
     instanceMemoryMB: instanceMemoryMB 
     maximumInstanceCount: maximumInstanceCount
+    deploymentStorageContainerName: deploymentStorageContainerName
   }
 }
 

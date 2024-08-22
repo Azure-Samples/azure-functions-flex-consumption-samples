@@ -13,7 +13,7 @@ param appSubnetName string = 'app'
 param tags object = {}
 
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-05-01' = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-01-01' = {
   name: vNetName
   location: location
   tags: tags
