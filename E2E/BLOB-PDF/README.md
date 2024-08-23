@@ -19,7 +19,7 @@ This solution creates two containers in blob storage, `unprocessed-pdf` and `pro
 
 Using an Event Grid-based Blob storage trigger reduces latency by triggering your function instantly as changes occur in the container. This type of Blob storage trigger is the only type of Blob storage trigger that can be used when running in a Flex Consumption plan.
 
-The communication between the function and the storage account happens via a system assigned managed identity, and the storage account is restricted behind a virtual network. The Azure Function uses [VNet integration](https://learn.microsoft.com/azure/azure-functions/functions-networking-options?tabs=azure-portal#virtual-network-integration) to reach the storage account. You can opt out of a VNet being used in the sample by setting AZURE_USE_VNET to false in the parameters.
+The communication between the function and the storage account happens via a system assigned managed identity, and the storage account is restricted behind a virtual network. The Azure Function uses [VNet integration](https://learn.microsoft.com/azure/azure-functions/functions-networking-options?tabs=azure-portal#virtual-network-integration) to reach the storage account. You can opt out of a VNet being used in the sample by setting SKIP_VNET to true in the parameters.
 
 ![Diagram showing customers uploading PDF files into the unprocessed-pdf Blob storage container and Azure Functions Flex Consumption processing them into PDF and sending the text to the processed-text container. The storage account and function app are inside the VNet.](./img/BLOB-PDF.png)
 
@@ -45,10 +45,10 @@ To set up this sample, follow these steps:
 azd up
 ```
 
-Alternatively, you can opt-out of a VNet being used in the sample. To do so, use `azd env` to configure `AZURE_USE_VNET` to `false` before running `azd up`:
+Alternatively, you can opt-out of a VNet being used in the sample. To do so, use `azd env` to configure `SKIP_VNET` to `true` before running `azd up`:
 
 ```bash
-azd env set AZURE_USE_VNET false
+azd env set SKIP_VNET true
 azd up
 ```
 

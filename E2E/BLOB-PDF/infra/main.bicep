@@ -14,7 +14,7 @@ param environmentName string
   }
 })
 param location string
-param useVnet bool = true
+param skipVnet bool = false
 param processorServiceName string = ''
 param applicationInsightsDashboardName string = ''
 param applicationInsightsName string = ''
@@ -60,7 +60,7 @@ module processor 'app/processor.bicep' = {
     runtimeVersion: '20'
     storageAccountName: storage.outputs.name
     deploymentStorageContainerName: deploymentStorageContainerName
-    virtualNetworkSubnetId: useVnet ? vnet.outputs.appSubnetID : ''
+    virtualNetworkSubnetId: skipVnet ? '' : vnet.outputs.appSubnetID
   }
 }
 
@@ -95,13 +95,13 @@ module storage 'core/storage/storage-account.bicep' = {
       {name: processedTextContainerName}
       {name: unprocessedPdfContainerName}
      ]
-     networkAcls: useVnet ? {
+     networkAcls: skipVnet ? {} : {
         defaultAction: 'Deny'
-      } : {}
+      }
   }
 }
 
-module vnet './app/vnet.bicep' = if (useVnet) {
+module vnet './app/vnet.bicep' = if (!skipVnet) {
   name: 'vnet'
   scope: rg
   params: {
@@ -111,14 +111,14 @@ module vnet './app/vnet.bicep' = if (useVnet) {
   }
 }
 
-module servicePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = if (useVnet) {
+module servicePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = if (!skipVnet) {
   name: 'servicePrivateEndpoint'
   scope: rg
   params: {
     location: location
     tags: tags
     virtualNetworkName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
-    subnetName: useVnet ? vnet.outputs.peSubnetName : ''
+    subnetName: skipVnet ? '' : vnet.outputs.peSubnetName
     resourceName: storage.outputs.name
   }
 }
