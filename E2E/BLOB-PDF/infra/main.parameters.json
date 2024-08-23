@@ -11,8 +11,8 @@
     "principalId": {
       "value": "${AZURE_PRINCIPAL_ID}"
     },
-    "useVnet": {
-      "value": "${AZURE_USE_VNET}"
+    "skipVnet": {
+      "value": "${SKIP_VNET}"
     }
   }
 }
