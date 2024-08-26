@@ -21,7 +21,8 @@ These starters samples give you the code + IaC (Azure Dev CLI enabled) to build 
 
 - [HTTP (.NET 8 Isolated / C#)](https://github.com/Azure-Samples/functions-quickstart-dotnet-azd): Contains a sample for building and deploying simple HTTP services that handle GET and POST with C#.
 - [HTTP (Python 3.11)](https://github.com/Azure-Samples/functions-quickstart-python-http-azd): Contains a sample for building and deploying simple HTTP services that handle GET and POST with Python.
-- [HTTP (Node 20)](https://github.com/Azure-Samples/functions-quickstart-javascript-azd): Contains a sample for building and deploying simple HTTP services that handle GET and POST with JavaScript.
+- [HTTP (JavaScript | Node 20)](https://github.com/Azure-Samples/functions-quickstart-javascript-azd): Contains a sample for building and deploying simple HTTP services that handle GET and POST with JavaScript.
+- [HTTP (TypeScript | Node 20)](https://github.com/Azure-Samples/functions-quickstart-typescript-azd): Contains a sample for building and deploying simple HTTP services that handle GET and POST with TypeScript.
 - [HTTP (Java 17)](https://github.com/Azure-Samples/azure-functions-java-flex-consumption-azd): Contains a sample for building and deploying simple HTTP services that handle GET and POST with Java.
 - [HTTP (PowerShell 7.4)](https://github.com/Azure-Samples/functions-quickstart-powershell-azd): Contains a sample for building and deploying simple HTTP services that handle GET and POST with PowerShell.
 
