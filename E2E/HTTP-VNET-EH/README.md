@@ -30,6 +30,7 @@ This sample demonstrates a function app running in a Flex Consumption plan that 
 Before you can run this sample, you must have the following:
 
 * An Azure subscription
+* Ensure both Microsoft.Web and Microsoft.App are [registered resource providers on the Azure subscription](https://learn.microsoft.com/azure/azure-resource-manager/management/resource-providers-and-types#register-resource-provider)
 * [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli)
 * [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local#install-the-azure-functions-core-tools)
 * [Azure Dev CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
