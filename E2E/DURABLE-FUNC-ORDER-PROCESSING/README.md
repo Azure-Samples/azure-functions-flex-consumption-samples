@@ -15,7 +15,7 @@ languages:
 
 Durable Functions helps you easily orchestrate stateful logic with *imperative* code, making it an execellent solution for workflow scenarios, as well as stateful patterns like fan-out/fan-in and workloads that require long-running operations or need to wait arbitrarily long for external events. 
 
-This sample shows how to implement an order processing workflow with Durable Functions in C# (running in the isolated model) and can easily be deployed to a function app in Azure. 
+This sample shows how to implement an order processing workflow with Durable Functions in C# (running in the isolated model) and can easily be deployed to a function app in Azure. Durable Functions needs a ["storage backend provider"](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-storage-providers) to persiste application states. This sample uses the default backend, which is Azure Storage.  
 
 > [!IMPORTANT]
 > This sample creates several resources. Make sure to delete the resource group after testing to minimize charges!
@@ -56,12 +56,15 @@ func start
 
 2) This sample uses an HTTP trigger to start an orchestration, so open a browser and go to http://localhost:7071/api/OrderProcessingOrchestration_HttpStart.
 
+![Screenshot of starting an orchestration instance through http](./img/start-orchestration-instance-http.png)
 
-3) To check the status of the orchestration instance started, go to the `statusQueryGetUri`. Your orchestration instance should show status "Running". After a few seconds, refresh to see that the orchestration is "Completed" and the output "Processed: true" meaning the order was processed. 
+3) To check the status of the orchestration instance started, go to the `statusQueryGetUri`. Your orchestration instance should show status "Running". After a few seconds, refresh to see that the orchestration instance is "Completed" and what the output is.
+
+![Screenshot of orchestration instance status](./img/orchestration-instance-status.png)
 
 ### Using Visual Studio
 
-1) Open `starter.sln` using Visual Studio 2022 or later.
+1) Open project using Visual Studio 2022 or later.
 2) Press Run/F5 to run in the debugger
 3) Use same approach above to start an orchestration instance and check its status. 
 
@@ -90,12 +93,18 @@ Note that `azd deploy` and Visual Studio does not yet work to publish Flex Consu
 
 ## Inspect the solution (optional)
 
-1. Once the deployment is done, inspect the new resource group. The Flex Consumption function app and plan, storage, and App Insightshave been created and configured:
+Once the deployment is done, inspect the new resource group. The Flex Consumption function app and plan, storage, App Insights, and networking related resources have been created and configured:
+![Screenshot of resources created by the bicept template](./img/resources-created.png)
 
+Because Durable Functions requires access to Azure Storage Blob, Table, and Queue, we created the associated networking resources such as private endpoints, link, etc. for each of those. 
 
 ## Test the solution
 
+1. Go to the Azure Function app resource, find the url of the app in the top **Essentials** section of the **Overview** tab. It should look something like this: https://func-processor-abcdefgxzy.azurewebsites.net. 
 
+2. Append `/api/OrderProcessingOrchestration_HttpStart` to the app url. Open a browser and go to that new url to start an orchestration instance. 
+
+3. Go to the `statusQueryGetUri` to see the status of your orchestration instance. It should show "Running" at the beginning, but change to "Completed" after a few seconds if you refresh the page. 
 
 ## Clean up resources
 
@@ -104,3 +113,10 @@ When you no longer need the resources created in this sample, run the following 
 ```bash
 azd down
 ```
+
+## Resources
+
+For more information on Durable Functions, the new Flex Consumption plan, and VNet integration, see the following resources:
+
+* [Durable Functions](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-overview)
+* [Azure Functions Flex Consumption documentation](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan)
