@@ -86,10 +86,13 @@ To set up this sample, follow these steps:
 
 ```bash
 azd up
+``` 
+
+3. Set always ready instance to reduce cold start latency. The Flex Consumption plan includes this feature to let you specify a number of instances that are always running to handle requests with minimal latency. By default, this is set to 0 but can be configured in [Azure Portal](https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to?tabs=azure-portal%2Cvs-code-publish&pivots=programming-language-csharp#set-always-ready-instance-counts) or with Azure CLI. We recommend that you set always ready instance to at least 1 for Durable Functions.
+
+```bash
+az functionapp scale config always-ready set --resource-group <RESOURCE_GROUP> --name <APP_NAME> --settings durable=1
 ```
-
-Note that `azd deploy` and Visual Studio does not yet work to publish Flex Consumption apps. Please use Azure Functions Core Tools, Az CLI or VS Code alternatives instead to deploy your app zip to these Flex resources.
-
 
 ## Inspect the solution (optional)
 
