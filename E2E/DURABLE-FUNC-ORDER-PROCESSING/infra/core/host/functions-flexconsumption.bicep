@@ -25,6 +25,8 @@ param kind string = 'functionapp,linux'
 param appSettings object = {}
 param instanceMemoryMB int = 2048
 param maximumInstanceCount int = 100
+param scaleGroup string = 'durable'
+param readyInstanceCount int = 1
 
 resource stg 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
@@ -55,6 +57,12 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
         }
       }
       scaleAndConcurrency: {
+        alwaysReady: [
+          {
+            name: scaleGroup
+            instanceCount: readyInstanceCount
+          }
+        ]
         instanceMemoryMB: instanceMemoryMB
         maximumInstanceCount: maximumInstanceCount
       }
