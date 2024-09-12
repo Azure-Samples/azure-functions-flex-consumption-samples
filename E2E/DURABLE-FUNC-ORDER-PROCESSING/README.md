@@ -59,10 +59,10 @@ func start
 ```json
 {
     "id": "e838bdb52db24560a6b30c261ac2985d",
-    "purgeHistoryDeleteUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e838bdb52db24560a6b30c261ac2985d?code=i3CC0FM0rB_cALPQcfiNxINUAx9JBG0yV_u5-_UY5HVQAzFu79h_qQ==",
-    "sendEventPostUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e838bdb52db24560a6b30c261ac2985d/raiseEvent/{eventName}?code=i3CC0FM0rB_cALPQcfiNxINUAx9JBG0yV_u5-_UY5HVQAzFu79h_qQ==",
-    "statusQueryGetUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e838bdb52db24560a6b30c261ac2985d?code=i3CC0FM0rB_cALPQcfiNxINUAx9JBG0yV_u5-_UY5HVQAzFu79h_qQ==",
-    "terminatePostUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e838bdb52db24560a6b30c261ac2985d/terminate?reason={{text}}}&code=i3CC0FM0rB_cALPQcfiNxINUAx9JBG0yV_u5-_UY5HVQAzFu79h_qQ=="
+    "purgeHistoryDeleteUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e838bdb52db24560a6b30c261ac2985d?code=<code>",
+    "sendEventPostUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e838bdb52db24560a6b30c261ac2985d/raiseEvent/{eventName}?code=<code>",
+    "statusQueryGetUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e838bdb52db24560a6b30c261ac2985d?code=<code>",
+    "terminatePostUri": "http://localhost:7071/runtime/webhooks/durabletask/instances/e838bdb52db24560a6b30c261ac2985d/terminate?reason={{text}}}&code=<code>"
 }
 ```
 
