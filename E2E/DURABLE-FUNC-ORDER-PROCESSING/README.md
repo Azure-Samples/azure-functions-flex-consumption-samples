@@ -121,6 +121,8 @@ Because Durable Functions requires access to Azure Storage Blob, Table, and Queu
 
 Flex Consumption has an *[always ready](https://learn.microsoft.com/azure/azure-functions/flex-consumption-how-to?#set-always-ready-instance-counts)* feature that allows users to specify the number of compute instances that are always running to minimize cold start. We [set always ready instance to 1](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#considerations) for the "durable" group in this sample. 
 
+The property `[maxQueuePollingInterval](https://learn.microsoft.com/azure/azure-functions/durable/durable-functions-bindings#hostjson-settings)` is also set to 1 second to decrease message processing latencies. Note, however, that lower values of `maxQueuePollingInterval` can result in higher storage costs because of increased storage transactions.
+
 ## Test the solution
 
 1. Use this Function CLI command to quickly find the function app url:
