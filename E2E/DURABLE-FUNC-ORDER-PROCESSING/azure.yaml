@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: df-orderprocessor-dotnet8-flex-func
+metadata:
+  template: df-orderprocessor-dotnet8-flex-func@0.0.1-beta
+services:
+  processor:
+    project: ./OrderProcessor/
+    language: dotnet
+    host: function
