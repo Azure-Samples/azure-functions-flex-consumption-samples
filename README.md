@@ -30,9 +30,9 @@ These starters samples give you the code + IaC (Azure Dev CLI enabled) to build 
 
 The following end to end samples are available in this repository for different Flex Consumption app scenarios:
 
-- [High scale HTTP function app to Event Hubs via VNet](./E2E/HTTP-VNET-EH/README.md): An HTTP function written in .NET that accepts calls from any source, and then sends the body of those HTTP calls to a secure Event Hubs hub behind a VNet using VNet integration.
-- [Service Bus trigger behind a VNet](./E2E/SB-VNET/README.md): A Service Bus queue triggered function written in Python that triggers from a VNet restricted service bus via private endpoint. A Virtual Machine in the VNet is used to send messages.
-- [PDF to text processor](./E2E/BLOB-PDF/README.md): A blob triggered function using Event Grid written in Node that processes PDF documents into text at scale.
+- [High scale HTTP function app to Event Hubs via VNet](https://github.com/Azure-Samples/functions-e2e-http-to-eventhubs): An HTTP function written in .NET that accepts calls from any source, and then sends the body of those HTTP calls to a secure Event Hubs hub behind a VNet using VNet integration.
+- [Service Bus trigger behind a VNet](https://github.com/Azure-Samples/functions-e2e-sb-vnet): A Service Bus queue triggered function written in Python that triggers from a VNet restricted service bus via private endpoint. A Virtual Machine in the VNet is used to send messages.
+- [PDF to text processor](https://github.com/Azure-Samples/functions-e2e-blob-pdf-to-text): A blob triggered function using Event Grid written in Node that processes PDF documents into text at scale.
 - [Order processing workflow with Azure Durable Functions](https://github.com/Azure-Samples/Durable-Functions-Order-Processing): Implement an order processing workflow using Durable Functions and Flex Consumption.
 - [SignalR Bidirectional chatroom sample](https://github.com/aspnet/AzureSignalR-samples/tree/main/samples/DotnetIsolated-ClassBased): This is a chatroom walkthrough sample that demonstrates bidirectional message pushing between Azure SignalR Service and Azure Functions in a serverless scenario using the Flex Consumption hosting plan and .NET.
 
