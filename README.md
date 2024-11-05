@@ -1,3 +1,4 @@
+<!--
 ---
 page_type: sample
 languages:
@@ -11,6 +12,8 @@ products:
 - azure-functions
 - azure
 ---
+-->
+
 # Azure Functions Flex Consumption Samples
 
 This repository contains starters, infrastructure as code, and end to end samples for Azure Functions Flex Consumption. Check out [the Azure documentation to learn more about Azure Functions Flex Consumption](https://aka.ms/flexconsumption). 
