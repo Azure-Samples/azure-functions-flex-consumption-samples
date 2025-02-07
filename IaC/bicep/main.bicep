@@ -17,8 +17,8 @@ param logAnalyticsName string = ''
 param applicationInsightsName string = ''
 @allowed(['dotnet-isolated','python','java', 'node', 'powerShell'])
 param functionAppRuntime string = 'dotnet-isolated'
-@allowed(['3.10','3.11', '7.4', '8.0', '10', '11', '17', '20'])
-param functionAppRuntimeVersion string = '8.0'
+@allowed(['3.10','3.11', '7.4', '8.0', '9.0', '10', '11', '17', '20'])
+param functionAppRuntimeVersion string = '9.0'
 @minValue(40)
 @maxValue(1000)
 param maximumInstanceCount int = 100
