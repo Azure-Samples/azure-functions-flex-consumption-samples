@@ -24,7 +24,7 @@ resource "azapi_resource" "serverFarm" {
   location = var.location
   name = var.functionPlanName
   parent_id = azurerm_resource_group.rg.id
-  body = jsonencode({
+  body = {
       kind = "functionapp",
       sku = {
         tier = "FlexConsumption",
@@ -33,7 +33,7 @@ resource "azapi_resource" "serverFarm" {
       properties = {
         reserved = true
       }
-  })
+  }
 }
 
 resource "azurerm_storage_account" "storageAccount" {
@@ -76,7 +76,7 @@ resource "azapi_resource" "functionApps" {
   location = var.location
   name = var.functionAppName
   parent_id = azurerm_resource_group.rg.id
-  body = jsonencode({
+  body = {
     kind = "functionapp,linux",
     identity = {
       type: "SystemAssigned"
@@ -115,7 +115,7 @@ resource "azapi_resource" "functionApps" {
           ]
         }
       }
-  })
+  }
   depends_on = [ azapi_resource.serverFarm, azurerm_application_insights.appInsights, azurerm_storage_account.storageAccount ]
 }
 
