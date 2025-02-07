@@ -18,7 +18,7 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: applicationInsightsName
 }
 
-resource flexFuncPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
+resource flexFuncPlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: planName
   location: location
   tags: tags
@@ -32,7 +32,7 @@ resource flexFuncPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   }
 }
 
-resource flexFuncApp 'Microsoft.Web/sites@2023-12-01' = {
+resource flexFuncApp 'Microsoft.Web/sites@2024-04-01' = {
   name: appName
   location: location
   tags: tags

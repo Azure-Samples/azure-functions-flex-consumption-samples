@@ -33,12 +33,13 @@
         "3.11",
         "7.4",
         "8.0",
+        "9.0",
         "10",
         "11",
         "17",
         "20"
       ],
-      "defaultValue": "8.0"      
+      "defaultValue": "9.0"      
     },
     "storageAccountName": {
       "type": "string"
