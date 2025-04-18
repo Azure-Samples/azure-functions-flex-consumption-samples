@@ -14,9 +14,13 @@ products:
 ---
 -->
 
-# Azure Functions Flex Consumption Samples
+# Azure Functions Flex Consumption Samples & Migration Guide
 
-This repository contains starters, infrastructure as code, and end to end samples for Azure Functions Flex Consumption. Check out [the Azure documentation to learn more about Azure Functions Flex Consumption](https://aka.ms/flexconsumption). 
+This repository contains migration guides, starters, infrastructure as code, and end to end samples for Azure Functions Flex Consumption. Check out [the Azure documentation to learn more about Azure Functions Flex Consumption](https://aka.ms/flexconsumption).
+
+## Migration Guide
+
+To migrate your existing Azure Functions Linux Consumption app to the Flex Consumption plan, follow the step-by-step instructions in the [Migration Guide](./migration/migration-guide.md). This guide provides detailed information on prerequisites, configuration changes, and best practices to ensure a smooth transition.
 
 ## Starter Samples Overview (Code + AZD)
 
