@@ -9,7 +9,7 @@ ms.date: 04/25/2025
 
 #customer intent: As a developer, I want to migrate my Azure function apps to Flex Consumption so that I can leverage improved scalability, performance, and networking security.
 -->
-# Migrate from Azure Functions Linux Consumption to Flex Consumption
+# Migrate from Azure Functions Linux Consumption to Flex Consumption - this is a draft of the guide still under review
 
 This article provides step-by-step instructions for migrating Azure function apps from the Linux Consumption plan to the Flex Consumption plan. It is intended for developers and administrators looking to modernize their function apps to take advantage of the benefits offered by the Flex Consumption plan.
 
