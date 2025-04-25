@@ -5,7 +5,7 @@ author: nzthiago
 ms.author: thalme
 ms.service: Azure Functions
 ms.topic: upgrade-and-migration-article
-ms.date: 03/28/2025
+ms.date: 04/25/2025
 
 #customer intent: As a developer, I want to migrate my Azure function apps to Flex Consumption so that I can leverage improved scalability, performance, and networking security.
 -->
@@ -16,7 +16,8 @@ This article provides step-by-step instructions for migrating Azure function app
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [Methods](#methods)
-- [Assessment - Identify a Function App Running on Linux Consumption]- [Assessment - Verify Region Compatibility](#assessment---verify-region-compatibility)
+- [Assessment - Identify a Function App Running on Linux Consumption](#assessment---identify-a-function-app-running-on-linux-consumption)
+- [Assessment - Verify Region Compatibility](#assessment---verify-region-compatibility)
 - [Assessment - Verify Runtime Compatibility](#assessment---verify-runtime-compatibility)
 - [Assessment - Verify Runtime Stack Version Compatibility](#assessment---verify-runtime-stack-version-compatibility)
 - [Assessment - Verify Deployment Slots Usage](#assessment---verify-deployment-slots-usage)
@@ -47,25 +48,37 @@ For further benefits and comparisons between Linux Consumption and Flex Consumpt
 
 ## Methods
 
-You have two options for migrating your Azure Function App from Linux Consumption to Flex Consumption:
+You have three options for migrating your Azure Function App from Linux Consumption to Flex Consumption:
 
-1. **Manual migration using Azure CLI or the Azure Portal**:
-   - Continue reading this guide for detailed step-by-step instructions with Azure CLI commands or the Azure Portal
-   - This approach gives you full control over each step of the migration process
+1.  **Manual migration using Azure CLI or the Azure Portal**:
+    - Continue reading this guide for detailed step-by-step instructions with Azure CLI commands or the Azure Portal
+    - This approach gives you full control over each step of the migration process
 
-2. **Guided migration using the provided shell script**:
-   - For a more interactive experience that guides you through each step of the migration process, use the provided shell script
-   - To use the shell script:
-     ```bash
-     # Make the script executable
-     chmod +x migration-guide.sh
-     
-     # Run the script
-     ./migration-guide.sh
-     ```
-   - The script will prompt you for inputs when needed and perform each step of the migration process
+2.  **Guided migration using the provided shell script**:
+    - For a more interactive experience that guides you through each step of the migration process, use the provided shell script
+    - To use the shell script:
+      ```bash
+      # Make the script executable
+      chmod +x migration-guide.sh
+      
+      # Run the script
+      ./migration-guide.sh
+      ```
+    - The script will prompt you for inputs when needed and perform each step of the migration process
 
-Choose the method that best suits your needs and experience level. The shell script is recommended for those who want a guided approach, while the manual method provides more flexibility and control.
+3.  **Guided migration using the provided PowerShell script**:
+    - For a guided experience using PowerShell, use the provided PowerShell script
+    - To use the PowerShell script:
+      ```powershell
+      # Ensure execution policy allows running local scripts (run as Administrator if needed)
+      # Set-ExecutionPolicy RemoteSigned -Scope CurrentUser 
+      
+      # Run the script
+      .\migration-guide.ps1
+      ```
+    - The script will prompt you for inputs when needed and perform each step of the migration process
+
+Choose the method that best suits your needs and experience level. The guided scripts are recommended for those who want a step-by-step approach, while the manual method provides more flexibility and control.
 
 ## Prerequisites
 
@@ -229,6 +242,10 @@ First, let's verify that the runtime of your app is supported by Flex Consumptio
 
 If your function app uses an unsupported runtime stack (like .NET in-process or custom handlers), stop here. You'll need to migrate to a supported runtime stack before moving to Flex Consumption. For .NET in-process apps, [migrate to .NET isolated](https://learn.microsoft.com/en-us/azure/azure-functions/migrate-dotnet-to-isolated-model). For custom handlers, you'll need to refactor your app to use one of the supported language runtimes or migrate your app to a different hosting plan like Elastic Premium instead.
 
+> **Important note for .NET in-process users**: If you're using the .NET in-process model (indicated by `DOTNET` in your function app's runtime stack), you must migrate to the .NET isolated model before proceeding with the Flex Consumption migration. The .NET in-process model is not supported in Flex Consumption. This requires updating your function app code to use the isolated process model. Follow the [migration guide to .NET isolated](https://learn.microsoft.com/en-us/azure/azure-functions/migrate-dotnet-to-isolated-model) to update your code before continuing with this migration process.
+>
+> **Note about the migration script**: If you choose to use the provided shell script (`migration-guide.sh`), it will automatically detect if your function app uses the .NET in-process model and ask you to convert it to .NET isolated first, then assumes it is a .NET isolated solution going forward. While this enables the creation of a Flex Consumption app, **you still need to update your actual function code** to use the .NET isolated programming model. The script simply handles the runtime configuration aspect.
+
 ## Assessment - Verify runtime stack version compatibility
 
 Next, let's verify that the runtime stack version of your app is supported by Flex Consumption in this Azure region.
@@ -334,11 +351,11 @@ Before proceeding with migration, verify if your function app uses the `LogsAndC
 
 First, check if the blob trigger is used by any of the functions in the function app:
 
-    ```bash
-    az functionapp function list --name linux-consumption-csharp8isolated --resource-group linux-consumption-csharp8isolated --query "[].config.bindings[?type=='blobTrigger' && source!='EventGrid']"
-    ```
+```bash
+az functionapp function list --name <FunctionAppName> --resource-group <ResourceGroupName> --query "[].config.bindings[?type=='blobTrigger' && (source==null || source!='EventGrid')]" -o json
+```
 
-If the command returns a value then there is a `LogsAndContainerScan` blob trigger being used by your function app. 
+If the command returns a non-empty array, then there is a `LogsAndContainerScan` blob trigger being used by your function app. 
 
 ### Using Azure Portal
 
@@ -352,6 +369,33 @@ If the command returns a value then there is a `LogsAndContainerScan` blob trigg
 > **Important:** If your function app is using the older `LogsAndContainerScan` blob trigger source type your solution would need to migrate to the `EventGrid` source type before it works with Flex Consumption. 
 
 Before migrating to Flex Consumption, ensure all `LogsAndContainerScan` blob trigger functions are updated to use [the newer Event Grid-based blob trigger implementation](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger).
+
+### Updating Unsupported Blob Triggers to Event Grid
+
+If your function app uses the `LogsAndContainerScan` blob trigger source type, it is not supported in the Flex Consumption plan. You must update these blob triggers to use the Event Grid-based implementation before proceeding with the migration.
+
+#### Why Update to Event Grid-Based Blob Triggers?
+- Flex Consumption is built to be performant, and the Event Grid-based blob triggers provide better scalability and performance by using an event-driven model.
+
+#### Steps to Migrate Blob Triggers to Event Grid
+
+1. **Identify Functions Using Unsupported Blob Triggers**:
+   Use the following Azure CLI command to list all blob triggers in your function app:
+   ```bash
+   az functionapp function list --name <FunctionAppName> --resource-group <ResourceGroupName> --query "[].config.bindings[?type=='blobTrigger' && (source==null || source!='EventGrid')]" -o json
+   ```
+   If the command returns a non-empty array, these are the functions using unsupported blob triggers.
+
+2. **Update the Blob Trigger Configuration**:
+   Modify the code of your app and test locally by reviewing [this tutorial](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger) for the programming language of your app.
+
+3. **Enable Event Grid Integration**:
+   Introduce the Event Grid subscription described in [the tutorial](https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger) to your solution.
+
+4. **Test the Updated Blob Triggers**:
+   After going through the rest of the migration and the solution has been deployed, test the updated function app and verify that the blob triggers work as expected with Event Grid.
+
+> **Note:** The provided shell script (`migration-guide.sh`) checks for unsupported blob triggers and prompts you to update them before proceeding with the migration.
 
 ## Pre-migration tasks - App Settings
 
@@ -867,7 +911,11 @@ For CORS settings:
 
 ### Step 7: Configure Identity and RBAC
 
-Recreate the identity configurations and role assignments you documented.
+Recreate the identity configurations and role assignments you documented during pre-migration.
+
+#### Why Recreate Role Assignments?
+- **System-Assigned Identities**: These cannot be transferred directly. You must enable a new system-assigned identity on the Flex Consumption app and recreate its role assignments.
+- **User-Assigned Identities**: These can be reassigned to the new app, but you must verify that the role assignments are correct to access the Azure Functions dependencies and create the appropriate role assignments manually.
 
 #### Using Azure CLI
 
@@ -881,21 +929,23 @@ new_principal_id=$(az functionapp identity show --name <NewFunctionAppName> --re
 # Assign roles (repeat for each role)
 az role assignment create --assignee $new_principal_id --role <RoleName> --scope <ResourceScope>
 
-# For user-assigned identities assign them to the app. The role based access should already be set.
+# For user-assigned identities, assign them to the app. The role-based access should already be set.
 az functionapp identity assign --name <NewFunctionAppName> --resource-group <ResourceGroupName> \
   --identities "/subscriptions/<SubscriptionId>/resourcegroups/<ResourceGroupName>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/<IdentityName>"
 ```
 
 #### Using Azure Portal
 
-1. Navigate to your new Flex Consumption function app in the Azure Portal
-2. Under `Settings`, click on `Identity`
+1. Navigate to your new Flex Consumption function app in the Azure Portal.
+2. Under `Settings`, click on `Identity`.
 3. For system-assigned identity:
-   - Enable the system-assigned identity
-   - Click `Azure role assignments` and add each role you documented
+   - Enable the system-assigned identity.
+   - Click `Azure role assignments` and add each role you documented.
 4. For user-assigned identities:
-   - Switch to the `User assigned` tab
-   - Click `+ Add` and select each identity you documented
+   - Switch to the `User assigned` tab.
+   - Click `+ Add` and select each identity you documented.
+
+> **Note**: Recreating role assignments is critical to ensure your function app has the same access to Azure resources after migration.
 
 ### Step 8: Configure Authentication
 
@@ -1071,14 +1121,13 @@ az functionapp config access-restriction add --name <NewFunctionAppName> --resou
 
 Now that your Flex Consumption app is configured, it's time to deploy your code. This step requires careful planning based on your trigger types to ensure a smooth transition without data loss.
 
-#### Using Azure CLI
+#### Using the CLI
 
-Deploy the code using one of these methods:
-
-```bash
-# Deploy using a local zip file
-az functionapp deployment source config-zip --resource-group <ResourceGroupName> --name <NewFunctionAppName> --src /path/to/function/package.zip
-```
+1. **Deploy Using a Local Zip File**:
+   Use the following Azure CLI command to deploy your function app code from a local zip file:
+   ```bash
+   az functionapp deployment source config-zip --resource-group <ResourceGroupName> --name <NewFunctionAppName> --src /path/to/function/package.zip
+   ```
 
 To stop the original app if needed:
 ```bash
@@ -1217,7 +1266,7 @@ Track cost differences between Linux Consumption and Flex Consumption:
    - Filter by resource to compare the cost of both function apps
    - Create cost alerts for unexpected spending
 
-2. **Cost Optimization Opportunities**:
+2. **Cost Optimization Opportunities**: 
    - Monitor memory utilization and adjust function memory allocation settings
    - Analyze function execution patterns and adjust concurrency settings
    - Consider using the Always Ready feature selectively for critical functions

@@ -3,7 +3,7 @@
 # Azure Functions Migration: Linux Consumption to Flex Consumption Guide
 # This script guides you through the process of migrating Azure Function Apps 
 # from Linux Consumption to Flex Consumption
-# Updated: April 2025
+# Updated: April 25, 2025
 
 # Text formatting
 BOLD="\033[1m"
@@ -123,7 +123,7 @@ check_required_extension() {
 
 # Function to list Linux Consumption function apps
 list_linux_consumption_apps() {
-  section_header "STEP 1: ASSESSMENT - Identifying Function Apps on Linux Consumption"
+  section_header "ASSESSMENT - Identify a Function App Running on Linux Consumption"
   echo "Searching for function apps running on Linux Consumption in your current subscription..."
   
   subscription_id=$(az account show --query id -o tsv)
@@ -171,19 +171,19 @@ list_linux_consumption_apps() {
   runtime_name="${stack_parts[0],,}"  # Convert to lowercase
   runtime_version="${stack_parts[1]}"
   
-  # Verify region compatibility
+  section_header "ASSESSMENT - Verify Region Compatibility"
   verify_region_compatibility "$location"
   
-  # Verify runtime compatibility
+  section_header "ASSESSMENT - Verify Runtime Compatibility"
   verify_runtime_compatibility "$runtime_name" "$runtime_version" "$location"
   
-  # Check for deployment slots
+  section_header "ASSESSMENT - Verify Deployment Slots Usage"
   verify_deployment_slots "$function_app_name" "$resource_group"
   
-  # Check for certificates
+  section_header "ASSESSMENT - Verify Use of Certificates"
   verify_certificates "$function_app_name" "$resource_group"
   
-  # Check for LogsAndContainerScan blob triggers
+  section_header "ASSESSMENT - Verify Use of Blob Trigger"
   verify_blob_triggers "$function_app_name" "$resource_group"
 }
 
@@ -234,15 +234,24 @@ verify_runtime_compatibility() {
   # Check if runtime is supported in Flex Consumption
   case "$runtime_name" in
     "dotnet")
-      warning_message "The dotnet in-process runtime is not supported in Flex Consumption."
-      echo "You will need to migrate your app to dotnet-isolated runtime first."
-      read -p "Do you want to continue with migration, switching to dotnet-isolated? (y/n): " continue_dotnet
-      if [[ $continue_dotnet == "y" ]]; then
-        runtime_name="dotnet-isolated"
-        echo "Will migrate as dotnet-isolated. You'll need to update your application code accordingly."
+      error_message "The dotnet in-process runtime is not supported in Flex Consumption."
+      echo "You need to migrate your app to the dotnet-isolated runtime first."
+      echo "Please follow the migration guide before continuing: https://learn.microsoft.com/en-us/azure/azure-functions/migrate-dotnet-to-isolated-model"
+      
+      read -p "Have you already completed the migration of your app code to dotnet-isolated? (y/n): " already_migrated
+      if [[ $already_migrated == "y" ]]; then
+        read -p "Please confirm that your app code has been fully migrated to use the .NET isolated model (y/n): " confirm_migration
+        if [[ $confirm_migration == "y" ]]; then
+          runtime_name="dotnet-isolated"
+          success_message "Proceeding with migration using dotnet-isolated runtime."
+        else
+          error_message "Please complete the migration to dotnet-isolated before continuing."
+          echo "Migration process stopped. Run this script again after completing your code migration."
+          exit 1
+        fi
       else
-        error_message "Migration cannot proceed with unsupported runtime."
-        echo "Please migrate your app to dotnet-isolated first: https://learn.microsoft.com/en-us/azure/azure-functions/migrate-dotnet-to-isolated-model"
+        error_message "Migration to Flex Consumption requires converting to dotnet-isolated first."
+        echo "Migration process stopped. Run this script again after completing your code migration."
         exit 1
       fi
       ;;
@@ -392,14 +401,12 @@ verify_blob_triggers() {
 
 # Function to export app settings and configurations
 export_app_settings() {
-  section_header "STEP 2: PRE-MIGRATION TASKS"
-  echo "Collecting settings and configuration for function app '$function_app_name'..."
+  section_header "PRE-MIGRATION TASKS - App Settings"
+  echo "Collecting app settings configuration for function app '$function_app_name'..."
   
   # Create a directory to store migration info
   migration_dir="flex_migration_${function_app_name}"
   mkdir -p "$migration_dir"
-  
-  subsection_header "2.1 Exporting app settings..."
   
   # Retrieve and store app settings
   echo "Retrieving app settings..."
@@ -428,7 +435,7 @@ export_app_settings() {
     exit 1
   fi
   
-  subsection_header "2.2 Exporting app configuration..."
+  section_header "PRE-MIGRATION TASKS - App Configuration"
   
   # Retrieve general site configuration
   echo "Retrieving general site configuration..."
@@ -462,7 +469,7 @@ export_app_settings() {
     exit 1
   fi
   
-  subsection_header "2.3 Checking for custom domains..."
+  section_header "PRE-MIGRATION TASKS - Identity Based Role Access"
   
   # Check for custom domains
   custom_domains=$(az functionapp config hostname list --webapp-name "$function_app_name" --resource-group "$resource_group" -o json)
@@ -487,33 +494,6 @@ export_app_settings() {
   else
     warning_message "Failed to retrieve custom domains."
   fi
-  
-  subsection_header "2.4 Checking for CORS settings..."
-  
-  # Check for CORS settings
-  cors_settings=$(az functionapp cors show --name "$function_app_name" --resource-group "$resource_group" -o json)
-  
-  if [ $? -eq 0 ]; then
-    # Save CORS settings to file
-    echo "$cors_settings" > "$migration_dir/cors_settings.json"
-    
-    if command -v jq &> /dev/null; then
-      allowed_origins=$(echo "$cors_settings" | jq -r '.allowedOrigins | length')
-    else
-      allowed_origins=$(echo "$cors_settings" | grep -c "allowedOrigins")
-    fi
-    
-    if [ "$allowed_origins" -gt 0 ]; then
-      echo "CORS settings found: $allowed_origins allowed origins"
-      echo "These will need to be reconfigured on the new function app."
-    else
-      success_message "No CORS settings found."
-    fi
-  else
-    warning_message "Failed to retrieve CORS settings."
-  fi
-  
-  subsection_header "2.5 Checking identity configuration..."
   
   # Check for managed identities
   identity_config=$(az functionapp identity show --name "$function_app_name" --resource-group "$resource_group" -o json 2>/dev/null)
@@ -550,7 +530,9 @@ export_app_settings() {
     success_message "No managed identities found."
   fi
   
-  subsection_header "2.6 Checking network access restrictions..."
+  section_header "PRE-MIGRATION TASKS - Built-in Authentication, App and Function Keys"
+  
+  section_header "PRE-MIGRATION TASKS - Networking Access Restrictions"
   
   # Check for network access restrictions
   access_restrictions=$(az functionapp config access-restriction show --name "$function_app_name" --resource-group "$resource_group" -o json)
@@ -575,7 +557,7 @@ export_app_settings() {
     warning_message "Failed to retrieve network access restrictions."
   fi
   
-  subsection_header "2.7 Checking for app and function keys..."
+  section_header "PRE-MIGRATION TASKS - App Code or Zip File"
   
   # Check for host keys
   host_keys=$(az functionapp keys list --name "$function_app_name" --resource-group "$resource_group" -o json 2>/dev/null)
@@ -607,330 +589,513 @@ export_app_settings() {
 
 # Function to create a new Flex Consumption function app
 create_flex_consumption_app() {
-  section_header "STEP 3: MIGRATION - Create Flex Consumption Function App"
+    section_header "STEP 3: MIGRATION - Create Flex Consumption Function App"
   
-  read -p "Enter a name for the new Flex Consumption function app (must be globally unique): " new_function_app_name
+    read -p "Enter a name for the new Flex Consumption function app (must be globally unique): " new_function_app_name
   
-  # Check if app name is available
-  name_available=$(az functionapp check-name-availability --name "$new_function_app_name" --query nameAvailable -o tsv)
+    # Check if app name is available
+    name_available=$(az functionapp check-name-availability --name "$new_function_app_name" --query nameAvailable -o tsv)
   
-  if [ "$name_available" != "true" ]; then
-    error_message "The function app name '$new_function_app_name' is not available. Please choose a different name."
-    create_flex_consumption_app  # Recursive call to try again
-    return
-  fi
+    if [ "$name_available" != "true" ]; then
+      error_message "The function app name '$new_function_app_name' is not available. Please choose a different name."
+      create_flex_consumption_app  # Recursive call to try again
+      return
+    fi
   
-  subsection_header "3.1 Creating a new storage account..."
+    subsection_header "3.1 Creating a new storage account..."
   
-  echo "Creating a new storage account for the function app..."
-  storage_account_name="${new_function_app_name//-/}sa"
-  storage_account_name=$(echo "$storage_account_name" | tr '[:upper:]' '[:lower:]' | cut -c 1-24)
+    echo "Creating a new storage account for the function app..."
+    # Use a simpler, potentially more unique name based on the new app name
+    storage_account_name="st$(echo $new_function_app_name | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]' | cut -c 1-20)"
   
-  az storage account create --name "$storage_account_name" --resource-group "$resource_group" --location "$location" --sku Standard_LRS
+    print_info "Attempting to create storage account: $storage_account_name in $location..."
+    az storage account create --name "$storage_account_name" --resource-group "$resource_group" --location "$location" --sku Standard_LRS --allow-blob-public-access false
   
-  if [ $? -ne 0 ]; then
-    error_message "Failed to create storage account."
-    exit 1
-  else
-    success_message "Storage account '$storage_account_name' created successfully."
-  fi
-  
-  # Get storage account connection string
-  storage_connection_string=$(az storage account show-connection-string --name "$storage_account_name" --resource-group "$resource_group" --query connectionString -o tsv)
-  
-  subsection_header "3.2 Creating Flex Consumption function app..."
-  
-  echo "Creating Flex Consumption function app '$new_function_app_name'..."
-  
-  # Extract runtime info from the runtime stack
-  IFS='|' read -ra stack_parts <<< "$runtime_stack"
-  runtime_name="${stack_parts[0],,}"  # Convert to lowercase
-  runtime_version="${stack_parts[1]}"
-  
-  if [[ "$runtime_name" == "dotnet" ]]; then
-    runtime_name="dotnet-isolated"
-    echo "Converting from dotnet to dotnet-isolated for Flex Consumption compatibility."
-  fi
-  
-  az functionapp create --name "$new_function_app_name" \
-      --resource-group "$resource_group" \
-      --storage-account "$storage_account_name" \
-      --runtime "$runtime_name" \
-      --runtime-version "$runtime_version" \
-      --consumption-plan-location "$location" \
-      --flex-consumption \
-      --functions-version 4
-  
-  if [ $? -ne 0 ]; then
-    error_message "Failed to create Flex Consumption function app."
-    exit 1
-  else
-    success_message "Flex Consumption function app '$new_function_app_name' created successfully."
-  fi
-  
-  subsection_header "3.3 Configuring app settings..."
-  
-  echo "Filtering app settings to exclude deprecated settings..."
-  
-  # Prepare file path for app settings
-  app_settings_file="$migration_dir/app_settings.json"
-  
-  if [ -f "$app_settings_file" ]; then
-    # Filter out settings that don't apply to Flex Consumption or are automatically created
-    if command -v jq &> /dev/null; then
-      filtered_settings=$(cat "$app_settings_file" | jq 'map(select(
-        (.name | ascii_downcase) != "website_use_placeholder_dotnetisolated" and
-        (.name | ascii_downcase | startswith("azurewebjobsstorage") | not) and
-        (.name | ascii_downcase) != "website_mount_enabled" and
-        (.name | ascii_downcase) != "enable_oryx_build" and
-        (.name | ascii_downcase) != "functions_extension_version" and
-        (.name | ascii_downcase) != "functions_worker_runtime" and
-        (.name | ascii_downcase) != "functions_worker_runtime_version" and
-        (.name | ascii_downcase) != "functions_max_http_concurrency" and
-        (.name | ascii_downcase) != "functions_worker_process_count" and
-        (.name | ascii_downcase) != "functions_worker_dynamic_concurrency_enabled" and
-        (.name | ascii_downcase) != "scm_do_build_during_deployment" and
-        (.name | ascii_downcase) != "website_contentazurefileconnectionstring" and
-        (.name | ascii_downcase) != "website_contentovervnet" and
-        (.name | ascii_downcase) != "website_contentshare" and
-        (.name | ascii_downcase) != "website_dns_server" and
-        (.name | ascii_downcase) != "website_max_dynamic_application_scale_out" and
-        (.name | ascii_downcase) != "website_node_default_version" and
-        (.name | ascii_downcase) != "website_run_from_package" and
-        (.name | ascii_downcase) != "website_skip_contentshare_validation" and
-        (.name | ascii_downcase) != "website_vnet_route_all" and
-        (.name | ascii_downcase) != "applicationinsights_connection_string"
-      )) | map("\(.name)=\(.value)") | join(" ")')
-      
-      # Apply filtered settings
-      if [ -n "$filtered_settings" ]; then
-        # Remove quotes from the settings string
-        filtered_settings="${filtered_settings//\"}"
-        
-        echo "Applying filtered app settings to the new function app..."
-        az functionapp config appsettings set --name "$new_function_app_name" --resource-group "$resource_group" --settings $filtered_settings
-        
-        if [ $? -ne 0 ]; then
-          warning_message "Failed to import all app settings. You may need to set some app settings manually."
+    if [ $? -ne 0 ]; then
+        error_message "Failed to create storage account '$storage_account_name'."
+        # Check if it already exists and belongs to the user?
+        existing_sku=$(az storage account show --name "$storage_account_name" --resource-group "$resource_group" --query sku.name -o tsv 2>/dev/null)
+        if [[ -n "$existing_sku" ]]; then
+            print_warning "Storage account '$storage_account_name' already exists. Attempting to use it."
         else
-          success_message "App settings imported successfully."
+            exit 1
         fi
+    else
+        success_message "Storage account '$storage_account_name' created successfully."
+    fi
+  
+    # Get storage account ID for role assignment later
+    storage_account_id=$(az storage account show --name "$storage_account_name" --resource-group "$resource_group" --query id -o tsv)
+    if [[ -z "$storage_account_id" ]]; then
+        error_message "Failed to get resource ID for storage account '$storage_account_name'."
+        exit 1
+    fi
+  
+    subsection_header "3.2 Creating Flex Consumption function app with Managed Identity..."
+  
+    echo "Creating Flex Consumption function app '$new_function_app_name' with System-Assigned Managed Identity..."
+  
+    # Extract runtime info from the runtime stack
+    IFS='|' read -ra stack_parts <<< "$runtime_stack"
+    runtime_name="${stack_parts[0],,}"  # Convert to lowercase
+    runtime_version="${stack_parts[1]}"
+    if [[ "$runtime_name" == "dotnet" ]]; then
+      runtime_name="dotnet-isolated"
+      print_warning "Adjusting runtime to dotnet-isolated as dotnet in-process is not supported."
+    fi
+  
+    # Create app without --storage-account but WITH --assign-identity and using --flexconsumption-location
+    az functionapp create --name "$new_function_app_name" \
+        --resource-group "$resource_group" \
+        --flexconsumption-location "$location" \
+        --runtime "$runtime_name" \
+        --runtime-version "$runtime_version" \
+        --flex-consumption \
+        --assign-identity "[system]"
+  
+    if [ $? -ne 0 ]; then
+        error_message "Failed to create Flex Consumption function app '$new_function_app_name'."
+        exit 1
+    else
+        success_message "Flex Consumption function app '$new_function_app_name' created successfully."
+    fi
+  
+    subsection_header "3.2.1 Getting Managed Identity Principal ID..."
+    principal_id=$(az functionapp identity show --name "$new_function_app_name" --resource-group "$resource_group" --query principalId -o tsv)
+    if [[ -z "$principal_id" || "$principal_id" == "null" ]]; then
+        error_message "Failed to retrieve principal ID for the new function app's system-assigned identity."
+        print_warning "Manual role assignment will be required for AzureWebJobsStorage."
+        # Allow script to continue but AzureWebJobsStorage might not work
+    else
+        success_message "Retrieved principal ID: $principal_id"
+    fi
+  
+    subsection_header "3.2.2 Assigning Storage Roles to Managed Identity..."
+    if [[ -n "$principal_id" && "$principal_id" != "null" ]]; then
+        print_info "Assigning required storage roles to identity $principal_id on storage account $storage_account_name..."
+        # It might take a moment for the identity to propagate, add a small delay
+        print_info "Waiting for identity propagation (15s)..."
+        sleep 15
+
+        roles_assigned_successfully=true
+
+        # Assign Storage Blob Data Owner
+        print_info "  Assigning 'Storage Blob Data Owner'..."
+        az role assignment create --assignee "$principal_id" --role "Storage Blob Data Owner" --scope "$storage_account_id" --output none
+        if [[ $? -ne 0 ]]; then
+            error_message "    Failed to assign 'Storage Blob Data Owner' role."
+            roles_assigned_successfully=false
+        else
+            success_message "    'Storage Blob Data Owner' role assigned."
+        fi
+
+        # Assign Storage Queue Data Contributor
+        print_info "  Assigning 'Storage Queue Data Contributor'..."
+        az role assignment create --assignee "$principal_id" --role "Storage Queue Data Contributor" --scope "$storage_account_id" --output none
+        if [[ $? -ne 0 ]]; then
+            error_message "    Failed to assign 'Storage Queue Data Contributor' role."
+            roles_assigned_successfully=false
+        else
+            success_message "    'Storage Queue Data Contributor' role assigned."
+        fi
+
+        # Assign Storage Table Data Contributor (Optional but good practice if tables might be used)
+        print_info "  Assigning 'Storage Table Data Contributor'..."
+        az role assignment create --assignee "$principal_id" --role "Storage Table Data Contributor" --scope "$storage_account_id" --output none
+        if [[ $? -ne 0 ]]; then
+            error_message "    Failed to assign 'Storage Table Data Contributor' role."
+            roles_assigned_successfully=false
+            # This might be less critical than blob/queue, so maybe just warn
+        else
+            success_message "    'Storage Table Data Contributor' role assigned."
+        fi
+
+        # Final check and warning
+        if ! $roles_assigned_successfully; then
+            print_warning "One or more required storage roles could not be assigned automatically."
+            print_warning "This is required for the function app to access '$storage_account_name' using Managed Identity."
+            print_warning "Please assign the roles manually in the Azure portal (Storage Account -> Access Control (IAM))."
+            print_warning "Required roles: Storage Blob Data Owner, Storage Queue Data Contributor, Storage Table Data Contributor."
+            read -p "Press [Enter] to continue despite role assignment failure(s)..."
+        else
+            success_message "Required storage roles assigned successfully."
+        fi
+    else
+        print_warning "Skipping role assignment because principal ID could not be retrieved."
+    fi
+
+    subsection_header "3.3 Configuring app settings (using Managed Identity for Storage)..."
+  
+    echo "Filtering app settings to exclude deprecated settings..."
+    app_settings_file="$migration_dir/app_settings.json"
+  
+    if [ -f "$app_settings_file" ]; then
+        if command -v jq &> /dev/null; then
+            # Filter out settings as before, ensuring AzureWebJobsStorage is excluded
+            filtered_settings=$(cat "$app_settings_file" | jq 'map(select(
+              (.name | ascii_downcase | startswith("azurewebjobsstorage") | not) and # Ensure original is excluded
+              (.name | ascii_downcase) != "website_use_placeholder_dotnetisolated" and
+              (.name | ascii_downcase) != "website_mount_enabled" and
+              (.name | ascii_downcase) != "enable_oryx_build" and
+              (.name | ascii_downcase) != "functions_extension_version" and # Will set explicitly
+              (.name | ascii_downcase) != "functions_worker_runtime" and
+              (.name | ascii_downcase) != "functions_worker_runtime_version" and
+              (.name | ascii_downcase) != "functions_max_http_concurrency" and
+              (.name | ascii_downcase) != "functions_worker_process_count" and
+              (.name | ascii_downcase) != "functions_worker_dynamic_concurrency_enabled" and
+              (.name | ascii_downcase) != "scm_do_build_during_deployment" and
+              (.name | ascii_downcase) != "website_contentazurefileconnectionstring" and
+              (.name | ascii_downcase) != "website_contentovervnet" and
+              (.name | ascii_downcase) != "website_contentshare" and
+              (.name | ascii_downcase) != "website_dns_server" and
+              (.name | ascii_downcase) != "website_max_dynamic_application_scale_out" and
+              (.name | ascii_downcase) != "website_node_default_version" and
+              (.name | ascii_downcase) != "website_run_from_package" and
+              (.name | ascii_downcase) != "website_skip_contentshare_validation" and
+              (.name | ascii_downcase) != "website_vnet_route_all" and
+              (.name | ascii_downcase) != "applicationinsights_connection_string"
+            )) | map("\(.name)=\(.value)") | join(" ")')
+  
+            # Apply filtered settings first
+            if [ -n "$filtered_settings" ]; then
+                filtered_settings="${filtered_settings//\"/}" # Remove quotes
+                print_info "Applying filtered app settings from source app..."
+                az functionapp config appsettings set --name "$new_function_app_name" --resource-group "$resource_group" --settings $filtered_settings --output none
+                [[ $? -ne 0 ]] && warning_message "Failed to import some app settings. Review manually."
+            else
+                print_info "No compatible app settings found to transfer from source."
+            fi
+  
+            # Now, explicitly set AzureWebJobsStorage using Managed Identity
+            print_info "Configuring AzureWebJobsStorage with Managed Identity..."
+            storage_blob_uri="https://${storage_account_name}.blob.core.windows.net"
+            storage_queue_uri="https://${storage_account_name}.queue.core.windows.net"
+            storage_table_uri="https://${storage_account_name}.table.core.windows.net" # Add table URI
+
+            identity_settings=(
+                "AzureWebJobsStorage__blobServiceUri=$storage_blob_uri"
+                "AzureWebJobsStorage__queueServiceUri=$storage_queue_uri"
+                "AzureWebJobsStorage__tableServiceUri=$storage_table_uri" # Add table URI setting
+                "FUNCTIONS_EXTENSION_VERSION=~4" # Required for identity-based connections
+            )
+  
+            az functionapp config appsettings set --name "$new_function_app_name" --resource-group "$resource_group" --settings "${identity_settings[@]}" --output none
+  
+            if [[ $? -ne 0 ]]; then
+                error_message "Failed to configure AzureWebJobsStorage with Managed Identity."
+                print_warning "The function app might not start correctly. Verify app settings and role assignments."
+            else
+                success_message "AzureWebJobsStorage configured with Managed Identity."
+            fi
+  
+        else
+            # jq not available - manual configuration needed
+            warning_message "jq tool not available. Manual app settings configuration is required."
+            print_warning "Please configure required app settings manually."
+            print_warning "Ensure AzureWebJobsStorage is configured using Managed Identity for storage account '$storage_account_name':"
+            print_warning "  AzureWebJobsStorage__blobServiceUri=https://${storage_account_name}.blob.core.windows.net"
+            print_warning "  AzureWebJobsStorage__queueServiceUri=https://${storage_account_name}.queue.core.windows.net"
+            print_warning "  AzureWebJobsStorage__tableServiceUri=https://${storage_account_name}.table.core.windows.net"
+            print_warning "  FUNCTIONS_EXTENSION_VERSION=~4"
+        fi
+    else
+        warning_message "App settings file not found. Skipping app settings configuration."
+        print_warning "Manual app settings configuration is required, including AzureWebJobsStorage with Managed Identity."
+    fi
+  
+    subsection_header "3.4 Applying general configuration..."
+  
+    # Apply general configuration settings from site_config.json
+    site_config_file="$migration_dir/site_config.json"
+    if [ -f "$site_config_file" ]; then
+      echo "Applying general configuration settings..."
+      
+      # Extract key configuration settings
+      if command -v jq &> /dev/null; then
+        http20_enabled=$(cat "$site_config_file" | jq -r '.http20Enabled')
+        https_only=$(az functionapp show --name "$function_app_name" --resource-group "$resource_group" --query httpsOnly -o tsv)
+        min_tls_version=$(cat "$site_config_file" | jq -r '.minTlsVersion')
+        client_cert_enabled=$(cat "$site_config_file" | jq -r '.clientCertEnabled')
+        client_cert_mode=$(cat "$site_config_file" | jq -r '.clientCertMode')
       else
-        warning_message "No compatible app settings found to transfer."
-      fi
-    else
-      warning_message "jq tool not available. Manual app settings configuration is recommended."
-      echo "Please review the app settings in $app_settings_file and apply them manually to the new function app."
-    fi
-  else
-    warning_message "App settings file not found. Skipping app settings configuration."
-  fi
-  
-  subsection_header "3.4 Applying general configuration..."
-  
-  # Apply general configuration settings from site_config.json
-  site_config_file="$migration_dir/site_config.json"
-  if [ -f "$site_config_file" ]; then
-    echo "Applying general configuration settings..."
-    
-    # Extract key configuration settings
-    if command -v jq &> /dev/null; then
-      http20_enabled=$(cat "$site_config_file" | jq -r '.http20Enabled')
-      https_only=$(az functionapp show --name "$function_app_name" --resource-group "$resource_group" --query httpsOnly -o tsv)
-      min_tls_version=$(cat "$site_config_file" | jq -r '.minTlsVersion')
-      client_cert_enabled=$(cat "$site_config_file" | jq -r '.clientCertEnabled')
-      client_cert_mode=$(cat "$site_config_file" | jq -r '.clientCertMode')
-    else
-      # Fallback if jq is not available
-      http20_enabled=$(grep -o '"http20Enabled":[^,}]*' "$site_config_file" | sed 's/"http20Enabled"://')
-      https_only=$(az functionapp show --name "$function_app_name" --resource-group "$resource_group" --query httpsOnly -o tsv)
-      min_tls_version=$(grep -o '"minTlsVersion":"[^"]*"' "$site_config_file" | sed 's/"minTlsVersion":"//;s/"$//')
-      client_cert_enabled=$(grep -o '"clientCertEnabled":[^,}]*' "$site_config_file" | sed 's/"clientCertEnabled"://')
-      client_cert_mode=$(grep -o '"clientCertMode":"[^"]*"' "$site_config_file" | sed 's/"clientCertMode":"//;s/"$//')
-    fi
-    
-    # Apply HTTP version setting
-    if [ -n "$http20_enabled" ] && [ "$http20_enabled" != "null" ]; then
-      az functionapp config set --name "$new_function_app_name" --resource-group "$resource_group" --http20-enabled "$http20_enabled"
-      if [ $? -eq 0 ]; then
-        success_message "HTTP 2.0 setting applied: $http20_enabled"
-      fi
-    fi
-    
-    # Apply HTTPS Only setting
-    if [ -n "$https_only" ] && [ "$https_only" != "null" ]; then
-      az functionapp update --name "$new_function_app_name" --resource-group "$resource_group" --set httpsOnly="$https_only"
-      if [ $? -eq 0 ]; then
-        success_message "HTTPS Only setting applied: $https_only"
-      fi
-    fi
-    
-    # Apply minimum TLS version
-    if [ -n "$min_tls_version" ] && [ "$min_tls_version" != "null" ]; then
-      az functionapp config set --name "$new_function_app_name" --resource-group "$resource_group" --min-tls-version "$min_tls_version"
-      if [ $? -eq 0 ]; then
-        success_message "Minimum TLS version applied: $min_tls_version"
-      fi
-    fi
-    
-    # Apply client certificate settings
-    if [ -n "$client_cert_enabled" ] && [ "$client_cert_enabled" != "null" ]; then
-      az functionapp update --name "$new_function_app_name" --resource-group "$resource_group" --set clientCertEnabled="$client_cert_enabled"
-      if [ $? -eq 0 ]; then
-        success_message "Client certificate setting applied: $client_cert_enabled"
+        # Fallback if jq is not available
+        http20_enabled=$(grep -o '"http20Enabled":[^,}]*' "$site_config_file" | sed 's/"http20Enabled"://')
+        https_only=$(az functionapp show --name "$function_app_name" --resource-group "$resource_group" --query httpsOnly -o tsv)
+        min_tls_version=$(grep -o '"minTlsVersion":"[^"]*"' "$site_config_file" | sed 's/"minTlsVersion":"//;s/"$//')
+        client_cert_enabled=$(grep -o '"clientCertEnabled":[^,}]*' "$site_config_file" | sed 's/"clientCertEnabled"://')
+        client_cert_mode=$(grep -o '"clientCertMode":"[^"]*"' "$site_config_file" | sed 's/"clientCertMode":"//;s/"$//')
       fi
       
-      # Apply client certificate mode if enabled
-      if [ "$client_cert_enabled" = "true" ] && [ -n "$client_cert_mode" ] && [ "$client_cert_mode" != "null" ]; then
-        az functionapp update --name "$new_function_app_name" --resource-group "$resource_group" --set clientCertMode="$client_cert_mode"
+      # Apply HTTP version setting
+      if [ -n "$http20_enabled" ] && [ "$http20_enabled" != "null" ]; then
+        az functionapp config set --name "$new_function_app_name" --resource-group "$resource_group" --http20-enabled "$http20_enabled"
         if [ $? -eq 0 ]; then
-          success_message "Client certificate mode applied: $client_cert_mode"
+          success_message "HTTP 2.0 setting applied: $http20_enabled"
         fi
       fi
-    fi
-  else
-    warning_message "Site configuration file not found. Skipping general configuration."
-  fi
-  
-  subsection_header "3.5 Configuring identity..."
-  
-  # Configure identity
-  identity_config_file="$migration_dir/identity_config.json"
-  if [ -f "$identity_config_file" ] && [ -s "$identity_config_file" ] && [ "$(cat "$identity_config_file")" != "null" ]; then
-    echo "Checking identity configuration..."
-    
-    # Check if system-assigned identity was enabled on the original app
-    if command -v jq &> /dev/null; then
-      system_assigned=$(cat "$identity_config_file" | jq -r 'if .principalId then "true" else "false" end')
-    else
-      if grep -q "principalId" "$identity_config_file"; then
-        system_assigned="true"
-      else
-        system_assigned="false"
-      fi
-    fi
-    
-    if [ "$system_assigned" = "true" ]; then
-      echo "Enabling system-assigned identity for the new function app..."
-      az functionapp identity assign --name "$new_function_app_name" --resource-group "$resource_group"
-      if [ $? -eq 0 ]; then
-        success_message "System-assigned identity enabled."
-        warning_message "Role assignments for the system-assigned identity need to be reconfigured manually."
-        echo "Please check the original function app's role assignments and recreate them for the new app."
-      fi
-    fi
-    
-    # Check for user-assigned identities
-    if command -v jq &> /dev/null && [ -n "$(cat "$identity_config_file" | jq -r '.userAssignedIdentities | keys[]?')" ]; then
-      echo "User-assigned identities were found on the original app."
-      echo "These need to be reassigned to the new function app manually."
-      warning_message "Please use the Azure portal or CLI to assign the same user-assigned identities to the new function app."
-    fi
-  else
-    echo "No identity configuration found for the original function app. Skipping identity setup."
-  fi
-  
-  subsection_header "3.6 Configuring CORS settings..."
-  
-  # Apply CORS settings
-  cors_file="$migration_dir/cors_settings.json"
-  if [ -f "$cors_file" ] && [ -s "$cors_file" ] && [ "$(cat "$cors_file")" != "null" ]; then
-    echo "Applying CORS settings..."
-    
-    if command -v jq &> /dev/null; then
-      allowed_origins=$(cat "$cors_file" | jq -r '.allowedOrigins[]?' 2>/dev/null)
       
-      if [ -n "$allowed_origins" ]; then
-        for origin in $allowed_origins; do
-          if [ "$origin" != "null" ] && [ "$origin" != "" ]; then
-            echo "Adding allowed origin: $origin"
-            az functionapp cors add --name "$new_function_app_name" --resource-group "$resource_group" --allowed-origins "$origin"
+      # Apply HTTPS Only setting
+      if [ -n "$https_only" ] && [ "$https_only" != "null" ]; then
+        az functionapp update --name "$new_function_app_name" --resource-group "$resource_group" --set httpsOnly="$https_only"
+        if [ $? -eq 0 ]; then
+          success_message "HTTPS Only setting applied: $https_only"
+        fi
+      fi
+      
+      # Apply minimum TLS version
+      if [ -n "$min_tls_version" ] && [ "$min_tls_version" != "null" ]; then
+        az functionapp config set --name "$new_function_app_name" --resource-group "$resource_group" --min-tls-version "$min_tls_version"
+        if [ $? -eq 0 ]; then
+          success_message "Minimum TLS version applied: $min_tls_version"
+        fi
+      fi
+      
+      # Apply client certificate settings
+      if [ -n "$client_cert_enabled" ] && [ "$client_cert_enabled" != "null" ]; then
+        az functionapp update --name "$new_function_app_name" --resource-group "$resource_group" --set clientCertEnabled="$client_cert_enabled"
+        if [ $? -eq 0 ]; then
+          success_message "Client certificate setting applied: $client_cert_enabled"
+        fi
+        
+        # Apply client certificate mode if enabled
+        if [ "$client_cert_enabled" = "true" ] && [ -n "$client_cert_mode" ] && [ "$client_cert_mode" != "null" ]; then
+          az functionapp update --name "$new_function_app_name" --resource-group "$resource_group" --set clientCertMode="$client_cert_mode"
+          if [ $? -eq 0 ]; then
+            success_message "Client certificate mode applied: $client_cert_mode"
           fi
-        done
-        success_message "CORS settings applied."
+        fi
       fi
     else
-      warning_message "jq tool not available. Please configure CORS settings manually."
+      warning_message "Site configuration file not found. Skipping general configuration."
     fi
-  else
-    echo "No CORS settings found. Skipping CORS configuration."
-  fi
+    
+    # Apply SCM Basic Auth Publishing Credentials
+    print_info "Applying SCM Basic Auth Publishing Credentials setting (${config_settings["basicPublishingCredentialsPolicies"]})..."
+    az resource update --resource-group "$dest_resource_group_name" --name scm --namespace Microsoft.Web --resource-type basicPublishingCredentialsPolicies --parent sites/"$dest_function_app_name" --set properties.allow=${config_settings["basicPublishingCredentialsPolicies"]} --output none
+    if [[ $? -ne 0 ]]; then
+      print_error "Failed to apply SCM Basic Auth Publishing Credentials setting."
+      # Decide if this is critical enough to stop
+    fi
+    
+    subsection_header "3.5 Applying Scale and Concurrency settings..."
+    if [[ -n "${config_settings["maximumInstanceCount"]}" ]]; then
+      max_scale_out=${config_settings["maximumInstanceCount"]}
+      print_info "Applying Maximum Instance Count: $max_scale_out..."
+      # Note: Flex Consumption minimum is 40. Adjust if original was lower?
+      # For now, apply the captured value directly.
+      az functionapp scale config set --name "$dest_function_app_name" --resource-group "$dest_resource_group_name" \
+          --maximum-instance-count "$max_scale_out" --output none
+      if [[ $? -ne 0 ]]; then
+          print_error "Failed to apply Maximum Instance Count setting."
+          # Decide if this is critical enough to stop
+      else
+          print_success "Maximum Instance Count applied."
+      fi
+    else
+      print_info "No custom Maximum Scale Out Limit was set on the source app. Skipping Scale and Concurrency configuration."
+    fi
   
-  subsection_header "3.7 Configuring network access restrictions..."
+    subsection_header "3.6 Configuring Storage Mounts..."
+    
+    # Apply Storage Mounts (Path Mappings)
+    print_progress "Applying Storage Mounts (Path Mappings)..."
+    if [[ -n "${config_settings["storageMounts"]}" ]]; then
+        print_info "Found saved Storage Mount configuration. Applying..."
+        echo "${config_settings["storageMounts"]}" | jq -c '.[]' | while IFS= read -r mount_config; do
+            mount_name=$(echo "$mount_config" | jq -r '.name')
+            mount_type=$(echo "$mount_config" | jq -r '.type')
+            account_name=$(echo "$mount_config" | jq -r '.accountName')
+            share_name=$(echo "$mount_config" | jq -r '.shareName')
+            access_key=$(echo "$mount_config" | jq -r '.accessKey') # Note: This might be null if using identity
+            mount_path=$(echo "$mount_config" | jq -r '.mountPath')
   
-  # Apply network access restrictions
-  access_file="$migration_dir/access_restrictions.json"
-  if [ -f "$access_file" ] && [ -s "$access_file" ] && [ "$(cat "$access_file")" != "null" ]; then
-    echo "Network access restrictions found in the original app."
-    warning_message "Network access restrictions need to be reconfigured manually."
-    echo "Please use the Azure portal or CLI to apply the same network restrictions to the new function app."
-  else
-    echo "No network access restrictions found. Skipping network configuration."
-  fi
+            print_info "Applying mount: $mount_name ($mount_type) at $mount_path"
   
-  subsection_header "3.8 Application code deployment..."
+            # Construct the command. Handle potential null access key if identity was used (though less common in Consumption)
+            cmd=("az" "webapp" "config" "storage-account" "add" \
+                 "--resource-group" "$dest_resource_group_name" \
+                 "--name" "$dest_function_app_name" \
+                 "--custom-id" "$mount_name" \
+                 "--storage-type" "$mount_type" \
+                 "--account-name" "$account_name" \
+                 "--share-name" "$share_name" \
+                 "--mount-path" "$mount_path")
   
-  # Ask if the user wants to deploy code now
-  read -p "Would you like to deploy your function code now? (y/n): " deploy_now
+            if [[ -n "$access_key" && "$access_key" != "null" ]]; then
+                 cmd+=("--access-key" "$access_key")
+            else
+                # If access key is null, maybe prompt user or attempt identity? For now, warn.
+                print_warning "Access key for mount '$mount_name' is missing. Manual configuration might be needed if identity wasn't used."
+                # Attempting without access key might fail, but let's try
+            fi
   
-  if [[ $deploy_now == "y" ]]; then
-    # Check if the original app was running from package
-    if [ -n "$run_from_package" ]; then
-      if [[ $run_from_package == http* || $run_from_package == https* ]]; then
-        echo "The original app was running from a remote package URL: $run_from_package"
-        read -p "Would you like to use the same package URL? (y/n): " use_same_package
+            # Execute the command
+            "${cmd[@]}" --output none
+            if [[ $? -ne 0 ]]; then
+                print_error "Failed to apply storage mount: $mount_name. Manual configuration required."
+            else
+                print_success "Storage mount '$mount_name' applied."
+            fi
+        done
+    else
+        print_info "No Storage Mounts were configured on the source app. Skipping."
+    fi
+  
+    subsection_header "3.7 Configuring CORS settings..."
+    
+    # Apply CORS settings
+    cors_file="$migration_dir/cors_settings.json"
+    if [ -f "$cors_file" ] && [ -s "$cors_file" ] && [ "$(cat "$cors_file")" != "null" ]; then
+      echo "Applying CORS settings..."
+      
+      if command -v jq &> /dev/null; then
+        allowed_origins=$(cat "$cors_file" | jq -r '.allowedOrigins[]?' 2>/dev/null)
         
-        if [[ $use_same_package == "y" ]]; then
-          echo "Deploying from package URL: $run_from_package"
-          
-          # For Flex Consumption, we need a different approach than WEBSITE_RUN_FROM_PACKAGE
-          echo "Deploying using fetch deployment from URL method..."
-          az functionapp deployment source config-zip -g "$resource_group" -n "$new_function_app_name" --src "$run_from_package"
-          
-          if [ $? -eq 0 ]; then
-            success_message "Function app deployed successfully from package URL."
-          else
-            error_message "Failed to deploy function app from package URL."
-            echo "You might need to download the package and deploy it locally."
-          fi
-        else
-          echo "Skipping deployment from the same package."
-          deploy_local_package
+        if [ -n "$allowed_origins" ]; then
+          for origin in $allowed_origins; do
+            if [ "$origin" != "null" ] && [ "$origin" != "" ]; then
+              echo "Adding allowed origin: $origin"
+              az functionapp cors add --name "$new_function_app_name" --resource-group "$resource_group" --allowed-origins "$origin"
+            fi
+          done
+          success_message "CORS settings applied."
         fi
       else
-        # Handle case where WEBSITE_RUN_FROM_PACKAGE=1 (local zip)
-        echo "The original app was running from a local package."
-        deploy_local_package
+        warning_message "jq tool not available. Please configure CORS settings manually."
       fi
     else
-      # No WEBSITE_RUN_FROM_PACKAGE setting
-      echo "The original app was not configured with WEBSITE_RUN_FROM_PACKAGE."
-      deploy_local_package
+      echo "No CORS settings found. Skipping CORS configuration."
     fi
-  else
-    echo "Skipping code deployment. You can deploy your function code later."
-  fi
+    
+    subsection_header "3.8 Configuring network access restrictions..."
+    
+    # Apply network access restrictions
+    access_file="$migration_dir/access_restrictions.json"
+    if [ -f "$access_file" ] && [ -s "$access_file" ] && [ "$(cat "$access_file")" != "null" ]; then
+      echo "Network access restrictions found in the original app."
+      warning_message "Network access restrictions need to be reconfigured manually."
+      echo "Please use the Azure portal or CLI to apply the same network restrictions to the new function app."
+    else
+      echo "No network access restrictions found. Skipping network configuration."
+    fi
+    
+    subsection_header "3.9 Application code deployment..."
+    
+    # Get the run_from_package setting again, as it might have been captured earlier
+    run_from_package="${config_settings["runFromPackage"]}"
   
-  success_message "Flex Consumption function app creation and configuration completed."
-  echo "The new function app has been created with name: $new_function_app_name"
+    # Ask if the user wants to deploy code now
+    read -p "Would you like to deploy your function code now? (y/n): " deploy_now
+  
+    if [[ "$deploy_now" == "y" ]]; then
+        # Check if the original app was running from package
+        if [[ -n "$run_from_package" ]]; then
+            if [[ $run_from_package == http* || $run_from_package == https* ]]; then
+                print_info "The original app was running from a remote package URL: $run_from_package"
+                read -p "Would you like to deploy directly using the same package URL? (y/n): " use_same_package
+  
+                if [[ "$use_same_package" == "y" ]]; then
+                    print_info "Deploying using fetch deployment from URL method..."
+                    az functionapp deployment source config-zip -g "$dest_resource_group_name" -n "$dest_function_app_name" --src "$run_from_package"
+  
+                    if [ $? -eq 0 ]; then
+                        success_message "Function app deployed successfully from package URL."
+                    else
+                        error_message "Failed to deploy function app directly from package URL."
+                        read -p "Would you like to try downloading the package and deploying it locally? (y/n): " download_and_deploy
+                        if [[ "$download_and_deploy" == "y" ]]; then
+                            download_package "$run_from_package"
+                        else
+                            print_warning "Skipping code deployment."
+                        fi
+                    fi
+                else
+                    read -p "Would you like to download the package from the URL to deploy it locally? (y/n): " download_first
+                    if [[ "$download_first" == "y" ]]; then
+                         download_package "$run_from_package"
+                    else
+                        print_info "Okay, skipping download. You can provide a local path if you have one."
+                        deploy_local_package # Prompt for local path
+                    fi
+                fi
+            elif [[ "$run_from_package" == "1" ]]; then
+                # Handle case where WEBSITE_RUN_FROM_PACKAGE=1 (local zip)
+                print_info "The original app was configured to run from a package (WEBSITE_RUN_FROM_PACKAGE=1)."
+                print_warning "The specific package path used previously is unknown."
+                deploy_local_package # Prompt for local path
+            else
+                 print_warning "Unrecognized WEBSITE_RUN_FROM_PACKAGE value: $run_from_package"
+                 deploy_local_package # Prompt for local path
+            fi
+        else
+            # No WEBSITE_RUN_FROM_PACKAGE setting
+            print_info "The original app was not configured with WEBSITE_RUN_FROM_PACKAGE."
+            deploy_local_package # Prompt for local path
+        fi
+    else
+        print_warning "Skipping code deployment. You can deploy your function code later using 'az functionapp deployment source config-zip'."
+    fi
+  
+    success_message "Flex Consumption function app creation and initial configuration completed."
+    print_info "The new function app has been created with name: $dest_function_app_name"
 }
 
 # Helper function to deploy from a local package
 deploy_local_package() {
-  read -p "Enter the path to your function app package (.zip file): " package_path
-  
-  if [ -f "$package_path" ]; then
-    echo "Deploying from local package: $package_path"
-    az functionapp deployment source config-zip -g "$resource_group" -n "$new_function_app_name" --src "$package_path"
-    
-    if [ $? -eq 0 ]; then
-      success_message "Function app deployed successfully from local package."
-    else
-      error_message "Failed to deploy function app from local package."
+    local package_path="$1" # Accept optional path argument
+
+    if [[ -z "$package_path" ]]; then
+        read -p "Enter the path to your function app package (.zip file): " package_path
     fi
-  else
-    error_message "Package file not found: $package_path"
-  fi
+
+    if [ -f "$package_path" ]; then
+        print_info "Deploying from local package: $package_path"
+        az functionapp deployment source config-zip -g "$dest_resource_group_name" -n "$dest_function_app_name" --src "$package_path"
+
+        if [ $? -eq 0 ]; then
+            success_message "Function app deployed successfully from local package."
+        else
+            error_message "Failed to deploy function app from local package."
+        fi
+    else
+        error_message "Package file not found: $package_path"
+        # Ask if user wants to try again or skip
+        read -p "Deployment failed. Try entering the path again? (y/n): " retry_deploy
+        if [[ "$retry_deploy" == "y" ]]; then
+            deploy_local_package # Call recursively without path argument to prompt again
+        else
+            print_warning "Skipping code deployment."
+        fi
+    fi
+}
+
+# Helper function to download package from URL
+download_package() {
+    local package_url="$1"
+    local download_filename="$(basename "$package_url")"
+    # Ensure filename ends with .zip if it doesn't have an extension
+    if [[ ! "$download_filename" == *.* ]]; then
+        download_filename+=".zip"
+    fi
+    local download_path="$migration_dir/$download_filename"
+
+    print_info "Attempting to download package from $package_url to $download_path..."
+
+    # Use curl to download. Follow redirects (-L), show errors (-f), silent (-s), output to file (-o)
+    if curl -LfsS "$package_url" -o "$download_path"; then
+        success_message "Package downloaded successfully to $download_path"
+        deploy_local_package "$download_path" # Deploy the downloaded package
+    else
+        error_message "Failed to download package from $package_url."
+        print_warning "Please check the URL and network connectivity."
+        # Offer to try manual path entry
+        read -p "Would you like to try providing a local path manually? (y/n): " try_manual_path
+        if [[ "$try_manual_path" == "y" ]]; then
+            deploy_local_package
+        else
+            print_warning "Skipping code deployment."
+        fi
+    fi
 }
 
 # Function to validate the migration
@@ -1045,6 +1210,27 @@ validate_migration() {
       exit 1
     fi
   fi
+
+  subsection_header "4.3: Configure Identity Role Assignments (Manual Reminder)"
+  print_progress "Handling Identity Role Assignments..."
+  if [[ -n "${config_settings["systemAssignedIdentityPrincipalId"]}" || -n "${config_settings["userAssignedIdentities"]}" ]]; then
+      print_warning "ACTION REQUIRED: The source app used Managed Identities."
+      if [[ -n "${config_settings["systemAssignedIdentityPrincipalId"]}" ]]; then
+          print_warning " - System-Assigned Identity was enabled."
+          print_warning "   A new System-Assigned Identity was enabled on '$dest_function_app_name'."
+          print_warning "   You MUST manually recreate the necessary Azure Role Assignments for this new identity."
+          print_warning "   Original Roles (for reference):" # Consider printing captured roles here if stored
+          # Example: echo "${config_settings["systemAssignedRoles"]}" | jq -c '.[] | {role: .roleDefinitionName, scope: .scope}'
+      fi
+      if [[ -n "${config_settings["userAssignedIdentities"]}" ]]; then
+          print_warning " - User-Assigned Identities were associated: ${config_settings["userAssignedIdentities"]}"
+          print_warning "   These identities were re-associated with '$dest_function_app_name'."
+          print_warning "   Verify that their existing Azure Role Assignments grant the required access."
+      fi
+      read -p "Press [Enter] once you have manually configured/verified Role Assignments..."
+  else
+      print_info "Skipping Identity Role Assignment configuration (Managed Identity was not used on source)."
+  fi
 }
 
 # Function to complete post-migration tasks
@@ -1124,50 +1310,18 @@ post_migration_tasks() {
     warning_message "Please update your Infrastructure as Code templates after completing this script."
   fi
   
-  subsection_header "5.4 App name management..."
-  
-  # Ask if the user wants to swap app names
-  read -p "Would you like to swap the function app names? This will rename the original app and give its name to the new app. (y/n): " swap_names
-  
-  if [[ $swap_names == "y" ]]; then
-    temp_name="${function_app_name}-old"
-    
-    echo "Renaming the original function app to '$temp_name'..."
-    az resource move --ids $(az functionapp show -g "$resource_group" -n "$function_app_name" --query id -o tsv) --destination-name "$temp_name"
-    
-    if [ $? -ne 0 ]; then
-      error_message "Failed to rename the original function app."
-      echo "You can rename it manually in the Azure portal."
-    else
-      success_message "Original function app renamed to '$temp_name'."
-      
-      echo "Renaming the new function app to '$function_app_name'..."
-      az resource move --ids $(az functionapp show -g "$resource_group" -n "$new_function_app_name" --query id -o tsv) --destination-name "$function_app_name"
-      
-      if [ $? -ne 0 ]; then
-        error_message "Failed to rename the new function app."
-        echo "You can rename it manually in the Azure portal."
-      else
-        success_message "New function app renamed to '$function_app_name'."
-        new_function_app_name="$function_app_name"
-      fi
-    fi
-  fi
-  
-  subsection_header "5.5 Resource cleanup (optional)..."
+  subsection_header "5.4 Resource cleanup (optional)..."
   
   # Ask if the user wants to delete the original app
-  read -p "Would you like to delete the original function app? WARNING: This cannot be undone. (y/n): " delete_original
+  read -p "Would you like to delete the original function app '$function_app_name'? WARNING: This cannot be undone. (y/n): " delete_original
   
   if [[ $delete_original == "y" ]]; then
-    original_name=$([[ $swap_names == "y" ]] && echo "$temp_name" || echo "$function_app_name")
-    
     # Double-check with the user
-    read -p "Are you ABSOLUTELY SURE you want to delete $original_name? This is irreversible. Type 'yes' to confirm: " final_confirm
+    read -p "Are you ABSOLUTELY SURE you want to delete '$function_app_name'? This is irreversible. Type 'yes' to confirm: " final_confirm
     
     if [[ $final_confirm == "yes" ]]; then
-      echo "Deleting the original function app '$original_name'..."
-      az functionapp delete --name "$original_name" --resource-group "$resource_group"
+      echo "Deleting the original function app '$function_app_name' in resource group '$resource_group'..."
+      az functionapp delete --name "$function_app_name" --resource-group "$resource_group"
       
       if [ $? -ne 0 ]; then
         error_message "Failed to delete the original function app."
@@ -1178,7 +1332,7 @@ post_migration_tasks() {
       echo "Deletion cancelled."
     fi
   else
-    echo "Original function app preserved."
+    echo "Original function app '$function_app_name' preserved."
   fi
   
   # Cleanup migration directory (optional)
