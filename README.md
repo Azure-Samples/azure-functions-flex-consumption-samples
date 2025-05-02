@@ -49,7 +49,8 @@ Flex Consumption has made some significant improvements to the control plane com
 
 - [ARM (Azure Resource Manager)](./IaC/armtemplate/README.md): Contains a sample for deploying Azure Functions using ARM templates.
 - [Bicep](./IaC/bicep/README.md): Contains a sample for deploying Azure Functions using Bicep templates.
-- [Terraform](./IaC/terraform/README.md): Contains a sample for deploying Azure Functions using Terraform scripts.
+- [Terraform AzAPI Provider](./IaC/terraformazapi/README.md): Contains a sample for deploying Azure Functions using Terraform scripts using the AzAPI provider.
+- [Terraform AzureRM Provider](./IaC/terraformazurerm/README.md): Contains samples for deploying Azure Functions using Terraform scripts using the AzureRM provider.
 
 ---
 

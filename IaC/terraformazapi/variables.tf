@@ -1,3 +1,7 @@
+variable "subscriptionId" {
+  description = "The Azure Subscription ID in which all resources in this example should be created."
+}
+
 variable "resourceGroupName" {
   description = "The Azure Resource Group name in which all resources in this example should be created."
 }
@@ -44,5 +48,9 @@ variable "functionAppRuntime" {
 variable "functionAppRuntimeVersion" {
   default = "9.0"
   description = "The runtime and version for your app. One of the following: '3.10', '3.11', '7.4', '8.0', '10', '11', '17', '20'"
+}
+variable "zoneRedundant" {
+  default = false
+  description = "Whether the app is zone redundant or not"
 }
 
