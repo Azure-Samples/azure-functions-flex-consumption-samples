@@ -70,6 +70,9 @@ Here is an example parameters file for creating a .NET Isolated 8.0 app that you
     },
     "applicationInsightsName": {
       "value": "fcthiarmai"
+    },
+    "zoneRedundant": {
+        "value": false
     }
   }
 }

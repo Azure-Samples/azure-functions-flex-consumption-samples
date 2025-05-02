@@ -81,7 +81,7 @@ resource flexFuncApp 'Microsoft.Web/sites@2024-04-01' = {
 var storageRoleDefinitionId  = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' //Storage Blob Data Owner role
 
 // Allow access from function app to storage account using a managed identity
-resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(storage.id, storageRoleDefinitionId)
   scope: storage
   properties: {

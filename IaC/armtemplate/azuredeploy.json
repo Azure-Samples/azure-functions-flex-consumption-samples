@@ -4,9 +4,6 @@
   "parameters": {
     "location": {
       "type": "string",
-      "allowedValues": [
-        "australiaeast", "eastasia", "eastus", "eastus2", "northeurope", "southcentralus", "southeastasia", "swedencentral", "uksouth", "westus2"
-      ],
       "defaultValue": "eastus"
     },
     "functionPlanName": {
@@ -37,7 +34,9 @@
         "10",
         "11",
         "17",
-        "20"
+        "20",
+        "21",
+        "22"
       ],
       "defaultValue": "9.0"      
     },
@@ -62,18 +61,22 @@
         4096
       ],
     "defaultValue": 2048
+    },
+    "zoneRedundant": {
+      "type": "bool",
+      "defaultValue": false
     }
   },
   "variables": {
     "resourceToken": "[toLower(uniqueString(subscription().id, resourceGroup().name, parameters('location')))]",
     "deploymentStorageContainerName": "[concat('app-package-', take(parameters('functionAppName'), 32),'-', take(variables('resourceToken'), 7))]",
-    "storageRoleDefinitionId": "b7e6dc6d-f1e8-4753-8033-0f276bb0955b" //Storage Blob Data Owner role
+    "storageBlobDataOwnerRoleDefinitionId": "b7e6dc6d-f1e8-4753-8033-0f276bb0955b" //Storage Blob Data Owner role
 
   },
   "resources": [
     {
       "type": "microsoft.operationalinsights/workspaces",
-      "apiVersion": "2021-06-01",
+      "apiVersion": "2025-02-01",
       "name": "[parameters('logAnalyticsName')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -102,7 +105,7 @@
     },
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2023-01-01",
+      "apiVersion": "2024-01-01",
       "name": "[parameters('storageAccountName')]",
       "location": "[parameters('location')]",
       "sku": {
@@ -117,7 +120,7 @@
     },
     {
       "type": "Microsoft.Storage/storageAccounts/blobServices",
-      "apiVersion": "2023-01-01",
+      "apiVersion": "2024-01-01",
       "name": "[format('{0}/{1}', parameters('storageAccountName'), 'default')]",
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
@@ -125,7 +128,7 @@
     },
     {
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-      "apiVersion": "2023-01-01",
+      "apiVersion": "2024-01-01",
       "name": "[format('{0}/{1}/{2}', parameters('storageAccountName'), 'default', variables('deploymentStorageContainerName'))]",
       "properties": {
         "publicAccess": "None"
@@ -136,7 +139,7 @@
     },
     {
       "type": "Microsoft.Web/serverfarms",
-      "apiVersion": "2023-12-01",
+      "apiVersion": "2024-04-01",
       "name": "[parameters('functionPlanName')]",
       "location": "[parameters('location')]",
       "kind": "functionapp",
@@ -145,12 +148,13 @@
         "name": "FC1"
       },
       "properties": {
-        "reserved": true
+        "reserved": true,
+        "zoneRedundant": "[parameters('zoneRedundant')]"
       }
     },
     {
       "type": "Microsoft.Web/sites",
-      "apiVersion": "2023-12-01",
+      "apiVersion": "2024-04-01",
       "name": "[parameters('functionAppName')]",
       "location": "[parameters('location')]",
       "kind": "functionapp,linux",
@@ -199,12 +203,13 @@
     },
     { //Gives the function app access to the storage account using system assigned managed identity
       "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2020-04-01-preview",
-      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), variables('storageRoleDefinitionId'))]",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), variables('storageBlobDataOwnerRoleDefinitionId'))]",
       "scope": "[concat('Microsoft.Storage/storageAccounts', '/', parameters('storageAccountName'))]",
       "properties": {
-        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageRoleDefinitionId'))]",
-        "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2023-12-01', 'Full').identity.principalId]"
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', variables('storageBlobDataOwnerRoleDefinitionId'))]",
+        "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2024-04-01', 'Full').identity.principalId]",
+        "principalType": "ServicePrincipal"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
