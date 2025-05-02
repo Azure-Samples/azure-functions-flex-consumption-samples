@@ -9,9 +9,9 @@ languages:
 - terraform
 ---
 
-# Flex Consumption plan - Terraform sample | Azure Functions
+# Flex Consumption plan - Terraform AzureRM sample | Azure Functions
 
-This Terraform sample deploys deploys a function app and other required resources in a Flex Consumption plan. When used in an Terraform-based deployment, this Terraform file is used to creates these Azure components:
+This Terraform sample deploys deploys a function app and other required resources in a Flex Consumption plan using [the AzureRM Terraform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) provider. When used in an Terraform-based deployment, this Terraform file is used to creates these Azure components:
 
 | Component | Description |
 | ---- | ---- |
@@ -39,11 +39,13 @@ Create a copy and modify the parameters file `variables.tfvars` to specify the v
 | **functionPlanName** | a unique name for the Flex Consumption app plan.|
 | **storageAccountName** | a unique name for the storage account.|
 | **functionAppRuntime** | The runtime of the Flex Consumption app that you plan to deploy. One of the following values: `dotnet-isolated`, `python`, `java`, `node`, `powershell`.|
-| **functionAppRuntimeVersion** | The runtime and version of the Flex Consumption app that you plan to deploy One of the following values: `3.10`, `3.11`, `7.4`, `8.0`, `10`, `11`, `17`, `20`.|
+| **functionAppRuntimeVersion** | The runtime and version of the Flex Consumption app that you plan to deploy One of the following values: `3.10`, `3.11`, `7.4`, `8.0`, `9.0`, `10`, `11`, `17`, `20`, `21`, `22`.|
+| **zoneRedundant** | Whether the app is zone redundant or not.|
 
 Here is an example `variables.tfvars` that you can modify:
 
 ```terraform
+subscriptionId = "00000000-0000-0000-0000-000000000000"
 resourceGroupName = "fcthitf"
 location = "eastasia"
 applicationInsightsName = "fcthitfai"
@@ -52,7 +54,8 @@ functionPlanName = "fcthitfplan"
 logAnalyticsName = "fcthitflog"
 storageAccountName = "fcthitfstor"
 functionAppRuntime = "dotnet-isolated"
-functionAppRuntimeVersion = "8.0"
+functionAppRuntimeVersion = "9.0"
+zoneRedundant = false
 ```
 
 ### 2. Deploy the Terraform file

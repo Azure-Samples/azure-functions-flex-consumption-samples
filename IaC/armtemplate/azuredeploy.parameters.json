@@ -25,6 +25,9 @@
     },
     "applicationInsightsName": {
       "value": "[YOUR-APPLICATION-INSIGHTS-NAME]"
+    },
+    "zoneRedundant": {
+        "value": false
     }
   }
 }

@@ -6,7 +6,6 @@ targetScope = 'subscription'
 param environmentName string
 @minLength(1)
 @description('Primary location for all resources')
-@allowed(['australiaeast', 'eastasia', 'eastus', 'eastus2', 'northeurope', 'southcentralus', 'southeastasia', 'swedencentral', 'uksouth', 'westus2', 'eastus2euap'])
 param location string 
 param appInsightsLocation string = ''
 param resourceGroupName string = ''
@@ -17,13 +16,14 @@ param logAnalyticsName string = ''
 param applicationInsightsName string = ''
 @allowed(['dotnet-isolated','python','java', 'node', 'powerShell'])
 param functionAppRuntime string = 'dotnet-isolated'
-@allowed(['3.10','3.11', '7.4', '8.0', '9.0', '10', '11', '17', '20'])
+@allowed(['3.10','3.11', '7.4', '8.0', '9.0', '10', '11', '17', '20', '21', '22'])
 param functionAppRuntimeVersion string = '9.0'
 @minValue(40)
 @maxValue(1000)
 param maximumInstanceCount int = 100
-@allowed([2048,4096])
+@allowed([512,2048,4096])
 param instanceMemoryMB int = 2048
+param zoneRedundant bool = false
 
 var abbrs = loadJsonContent('./abbreviations.json')
 // Generate a unique token to be used in naming resources.
@@ -40,7 +40,7 @@ var tags = {
 
 var monitoringLocation = !empty(appInsightsLocation) ? appInsightsLocation : location
 
-resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource rg 'Microsoft.Resources/resourceGroups@2024-11-01' = {
   location: location
   tags: tags
   name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}${environmentName}'
@@ -85,6 +85,7 @@ module flexFunction 'core/host/function.bicep' = {
     functionAppRuntime: functionAppRuntime
     functionAppRuntimeVersion: functionAppRuntimeVersion
     maximumInstanceCount: maximumInstanceCount
-    instanceMemoryMB: instanceMemoryMB    
+    instanceMemoryMB: instanceMemoryMB
+    zoneRedundant: zoneRedundant 
   }
 }

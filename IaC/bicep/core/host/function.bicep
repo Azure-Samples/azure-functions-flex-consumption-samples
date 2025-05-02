@@ -9,8 +9,9 @@ param functionAppRuntime string = 'dotnet-isolated'
 param functionAppRuntimeVersion string = '8.0'
 param maximumInstanceCount int = 100
 param instanceMemoryMB int = 2048
+param zoneRedundant bool = false
 
-resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+resource storage 'Microsoft.Storage/storageAccounts@2024-01-01' existing = {
   name: storageAccountName
 }
 
@@ -29,6 +30,7 @@ resource flexFuncPlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   }
   properties: {
     reserved: true
+    zoneRedundant: zoneRedundant
   }
 }
 
@@ -79,7 +81,7 @@ resource flexFuncApp 'Microsoft.Web/sites@2024-04-01' = {
 var storageRoleDefinitionId  = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' //Storage Blob Data Owner role
 
 // Allow access from function app to storage account using a managed identity
-resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+resource storageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(storage.id, storageRoleDefinitionId)
   scope: storage
   properties: {

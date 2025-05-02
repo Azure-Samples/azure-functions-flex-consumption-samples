@@ -1,3 +1,7 @@
+variable "subscriptionId" {
+  description = "The Azure Subscription ID in which all resources in this example should be created."
+}
+
 variable "resourceGroupName" {
   description = "The Azure Resource Group name in which all resources in this example should be created."
 }
@@ -33,7 +37,7 @@ variable "maximumInstanceCount" {
 
 variable "instanceMemoryMB" {
   default = 2048
-  description = "The instance memory for the instances of the app: 2048 or 4096"
+  description = "The instance memory for the instances of the app: 512, 2048, or 4096"
 }
 
 variable "functionAppRuntime" {
@@ -43,6 +47,10 @@ variable "functionAppRuntime" {
 
 variable "functionAppRuntimeVersion" {
   default = "9.0"
-  description = "The runtime and version for your app. One of the following: '3.10', '3.11', '7.4', '8.0', '10', '11', '17', '20'"
+  description = "The runtime and version for your app. One of the following: '3.10', '3.11', '7.4', '8.0', '10', '11', '17', '20', '21', '22'"
+}
+variable "zoneRedundant" {
+  default = false
+  description = "Whether the app is zone redundant or not"
 }
 
