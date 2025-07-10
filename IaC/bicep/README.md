@@ -18,7 +18,7 @@ This bicep sample deploys a function app and other required resources in a Flex 
 ## Architecture
 
 The template creates the following resources:
-
+```
 Resource Group
 ├── Log Analytics Workspace
 ├── Application Insights (linked to Log Analytics)
@@ -26,6 +26,7 @@ Resource Group
 ├── App Service Plan (Flex Consumption)
 ├── Function App (Flex Consumption app with system-assigned managed identity)
 └── Role Based Access Control Role Assignments
+```
 
 Component descriptions:
 
