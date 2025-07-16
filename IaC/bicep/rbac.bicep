@@ -7,9 +7,6 @@ param appInsightsName string
 param managedIdentityPrincipalId string // Principal ID for the System-Assigned Managed Identity
 param userIdentityPrincipalId string = '' // Principal ID for the User Identity
 param allowUserIdentityPrincipal bool = false // Flag to enable user identity role assignments
-param enableBlob bool = true
-param enableQueue bool = false
-param enableTable bool = false
 
 // Define Role Definition IDs for Azure built-in roles
 var roleDefinitions = {
@@ -29,7 +26,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 }
 
 // Storage Account - Blob Data Owner Role Assignment (System-Assigned Managed Identity)
-module storageRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (enableBlob && !empty(managedIdentityPrincipalId)) {
+module storageRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (!empty(managedIdentityPrincipalId)) {
   name: 'storageRoleAssignment-${uniqueString(storageAccount.id, managedIdentityPrincipalId)}'
   params: {
     resourceId: storageAccount.id
@@ -42,7 +39,7 @@ module storageRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assi
 }
 
 // Storage Account - Blob Data Owner Role Assignment (User Identity)
-module storageRoleAssignment_User 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (enableBlob && allowUserIdentityPrincipal && !empty(userIdentityPrincipalId)) {
+module storageRoleAssignment_User 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (allowUserIdentityPrincipal && !empty(userIdentityPrincipalId)) {
   name: 'storageRoleAssignment-User-${uniqueString(storageAccount.id, userIdentityPrincipalId)}'
   params: {
     resourceId: storageAccount.id
@@ -55,7 +52,7 @@ module storageRoleAssignment_User 'br/public:avm/ptn/authorization/resource-role
 }
 
 // Storage Account - Queue Data Contributor Role Assignment (System-Assigned Managed Identity)
-module queueRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (enableQueue && !empty(managedIdentityPrincipalId)) {
+module queueRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (!empty(managedIdentityPrincipalId)) {
   name: 'queueRoleAssignment-${uniqueString(storageAccount.id, managedIdentityPrincipalId)}'
   params: {
     resourceId: storageAccount.id
@@ -68,7 +65,7 @@ module queueRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assign
 }
 
 // Storage Account - Queue Data Contributor Role Assignment (User Identity)
-module queueRoleAssignment_User 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (enableQueue && allowUserIdentityPrincipal && !empty(userIdentityPrincipalId)) {
+module queueRoleAssignment_User 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (allowUserIdentityPrincipal && !empty(userIdentityPrincipalId)) {
   name: 'queueRoleAssignment-User-${uniqueString(storageAccount.id, userIdentityPrincipalId)}'
   params: {
     resourceId: storageAccount.id
@@ -81,7 +78,7 @@ module queueRoleAssignment_User 'br/public:avm/ptn/authorization/resource-role-a
 }
 
 // Storage Account - Table Data Contributor Role Assignment (System-Assigned Managed Identity)
-module tableRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (enableTable && !empty(managedIdentityPrincipalId)) {
+module tableRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (!empty(managedIdentityPrincipalId)) {
   name: 'tableRoleAssignment-${uniqueString(storageAccount.id, managedIdentityPrincipalId)}'
   params: {
     resourceId: storageAccount.id
@@ -94,7 +91,7 @@ module tableRoleAssignment 'br/public:avm/ptn/authorization/resource-role-assign
 }
 
 // Storage Account - Table Data Contributor Role Assignment (User Identity)
-module tableRoleAssignment_User 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (enableTable && allowUserIdentityPrincipal && !empty(userIdentityPrincipalId)) {
+module tableRoleAssignment_User 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (allowUserIdentityPrincipal && !empty(userIdentityPrincipalId)) {
   name: 'tableRoleAssignment-User-${uniqueString(storageAccount.id, userIdentityPrincipalId)}'
   params: {
     resourceId: storageAccount.id

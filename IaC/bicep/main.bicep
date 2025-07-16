@@ -59,10 +59,10 @@ param logAnalyticsName string = ''
 param applicationInsightsName string = ''
 
 @allowed(['dotnet-isolated','python','java', 'node', 'powerShell'])
-param functionAppRuntime string = 'dotnet-isolated'
+param functionAppRuntime string = 'python'
 
 @allowed(['3.10','3.11', '3.12', '7.4', '8.0', '9.0', '10', '11', '17', '20', '21', '22'])
-param functionAppRuntimeVersion string = '9.0'
+param functionAppRuntimeVersion string = '3.11'
 
 @minValue(40)
 @maxValue(1000)
@@ -87,15 +87,6 @@ var deploymentStorageContainerName = 'app-package-${take(functionAppName_resolve
 var tags = {
   // Tag all resources with the environment name.
   'azd-env-name': environmentName
-}
-
-// Define the configuration object for storage endpoints
-var storageEndpointConfig = {
-  enableBlob: true  // Required for AzureWebJobsStorage, .zip deployment, Event Hubs trigger and Timer trigger checkpointing
-  enableQueue: true  // Required for Durable Functions, MCP trigger, and other triggers
-  enableTable: true  // Required for Durable Functions, OpenAI triggers and bindings, and diagnostic logs
-  enableFiles: false   // Not required for Flex Consumption, used in legacy scenarios
-  allowUserIdentityPrincipal: !empty(principalId)   // Allow interactive user identity to access for testing and debugging
 }
 
 // Organize resources in a resource group
@@ -130,7 +121,7 @@ module applicationInsights 'br/public:avm/res/insights/component:0.6.0' = {
 }
 
 // Backing storage for Azure Functions
-module storage 'br/public:avm/res/storage/storage-account:0.8.3' = {
+module storage 'br/public:avm/res/storage/storage-account:0.25.0' = {
   name: 'storage'
   scope: rg
   params: {
@@ -146,6 +137,8 @@ module storage 'br/public:avm/res/storage/storage-account:0.8.3' = {
     blobServices: {
       containers: [{name: deploymentStorageContainerName}]
     }
+    tableServices:{}
+    queueServices: {}
     minimumTlsVersion: 'TLS1_2'  // Enforcing TLS 1.2 for better security
     location: location
     tags: tags
@@ -170,7 +163,7 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.1' = {
 }
 
 // Azure Functions Flex Consumption
-module functionApp 'br/public:avm/res/web/site:0.15.1' = {
+module functionApp 'br/public:avm/res/web/site:0.16.0' = {
   name: 'functionapp'
   scope: rg
   params: {
@@ -204,14 +197,20 @@ module functionApp 'br/public:avm/res/web/site:0.15.1' = {
     siteConfig: {
       alwaysOn: false
     }
-    appSettingsKeyValuePairs: {
-      // Storage configuration using managed identity
-      AzureWebJobsStorage__credential: 'managedidentity'
-      AzureWebJobsStorage__blobServiceUri: storage.outputs.primaryBlobEndpoint
-      
-      // Application Insights settings
-      APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.outputs.connectionString
+    configs: [{
+      name: 'appsettings'
+      properties:{
+        // Only include required credential settings unconditionally
+        AzureWebJobsStorage__credential: 'managedidentity'
+        AzureWebJobsStorage__blobServiceUri: 'https://${storage.outputs.name}.blob.${environment().suffixes.storage}'
+        AzureWebJobsStorage__queueServiceUri: 'https://${storage.outputs.name}.queue.${environment().suffixes.storage}'
+        AzureWebJobsStorage__tableServiceUri: 'https://${storage.outputs.name}.table.${environment().suffixes.storage}'
+
+        // Application Insights settings are always included
+        APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.outputs.connectionString
+        APPLICATIONINSIGHTS_AUTHENTICATION_STRING: 'Authorization=AAD'
     }
+    }]
   }
 }
 
@@ -224,10 +223,7 @@ module rbacAssignments 'rbac.bicep' = {
     appInsightsName: applicationInsights.outputs.name
     managedIdentityPrincipalId: functionApp.outputs.?systemAssignedMIPrincipalId ?? ''
     userIdentityPrincipalId: principalId
-    enableBlob: storageEndpointConfig.enableBlob
-    enableQueue: storageEndpointConfig.enableQueue
-    enableTable: storageEndpointConfig.enableTable
-    allowUserIdentityPrincipal: storageEndpointConfig.allowUserIdentityPrincipal
+    allowUserIdentityPrincipal: !empty(principalId)
   }
 }
 
