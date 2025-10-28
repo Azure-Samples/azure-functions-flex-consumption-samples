@@ -14,13 +14,9 @@ products:
 ---
 -->
 
-# Azure Functions Flex Consumption Samples & Migration Guide
+# Azure Functions Flex Consumption Samples
 
-This repository contains migration guides, starters, infrastructure as code, and end to end samples for Azure Functions Flex Consumption. Check out [the Azure documentation to learn more about Azure Functions Flex Consumption](https://aka.ms/flexconsumption).
-
-## Migration Guide (draft)
-
-To migrate your existing Azure Functions Linux Consumption app to the Flex Consumption plan, follow the step-by-step instructions in the [Migration Guide](./migration/migration-guide.md). This guide provides detailed information on prerequisites, configuration changes, and best practices to ensure a smooth transition.
+This repository contains links to quickstart samples, end to end samples, and infrastructure as code examples for Azure Functions Flex Consumption. Check out [the Azure documentation to learn more about Azure Functions Flex Consumption](https://aka.ms/flexconsumption).
 
 ## Starter Samples Overview (Code + AZD)
 
@@ -36,6 +32,17 @@ Simple HTTP services that handle GET and POST requests, with code and Azure Deve
 - [TypeScript](https://github.com/Azure-Samples/functions-quickstart-typescript-azd)
 - [Java](https://github.com/Azure-Samples/azure-functions-java-flex-consumption-azd)
 - [PowerShell](https://github.com/Azure-Samples/functions-quickstart-powershell-azd)
+
+### Blob Trigger with Event Grid source Quickstarts
+
+Simple blob triggered functions that use the Event Grid source type to process blobs quickly, with code and Azure Developer CLI (AZD) templates for easy deployment:
+
+- [.NET Isolated / C#](https://github.com/Azure-Samples/functions-quickstart-dotnet-azd-eventgrid-blob)
+- [Python](https://github.com/Azure-Samples/functions-quickstart-python-azd-eventgrid-blob)
+- [JavaScript](https://github.com/Azure-Samples/functions-quickstart-javascript-azd-eventgrid-blob)
+- [TypeScript](https://github.com/Azure-Samples/functions-quickstart-typescript-azd-eventgrid-blob)
+- Java - Upcoming
+- [PowerShell](https://github.com/Azure-Samples/functions-quickstart-powershell-azd-eventgrid-blob)
 
 ### Timer Trigger Quickstarts
 
