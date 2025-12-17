@@ -5,45 +5,6 @@ targetScope = 'subscription'
 @description('Name of the the environment which is used to generate a short unique hash used in all resources.')
 param environmentName string
 
-@minLength(1)
-@description('Primary location for all resources')
-// To verify current supported regions, run: az functionapp list-flexconsumption-locations
-// Last updated: July 2025 - includes all 32 supported regions
-@allowed([
-  'australiaeast'
-  'australiasoutheast'
-  'brazilsouth'
-  'canadacentral'
-  'centralindia'
-  'centralus'
-  'eastasia'
-  'eastus'
-  'eastus2'
-  'eastus2euap'
-  'francecentral'
-  'germanywestcentral'
-  'italynorth'
-  'japaneast'
-  'japanwest'
-  'koreacentral'
-  'northcentralus'
-  'northeurope'
-  'norwayeast'
-  'southafricanorth'
-  'southcentralus'
-  'southeastasia'
-  'southindia'
-  'spaincentral'
-  'swedencentral'
-  'uaenorth'
-  'uksouth'
-  'ukwest'
-  'westcentralus'
-  'westeurope'
-  'westus'
-  'westus2'
-  'westus3'
-])
 @metadata({
   azd: {
     type: 'location'
