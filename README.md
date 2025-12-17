@@ -33,6 +33,17 @@ Simple HTTP services that handle GET and POST requests, with code and Azure Deve
 - [Java](https://github.com/Azure-Samples/azure-functions-java-flex-consumption-azd)
 - [PowerShell](https://github.com/Azure-Samples/functions-quickstart-powershell-azd)
 
+### Azure Blob Storage Trigger (Event Grid) Quickstarts
+
+Quickstarts for building Azure Blob Storage triggered function apps using Event Grid in Flex Consumption.
+
+- [.NET Isolated / C#](https://github.com/Azure-Samples/functions-quickstart-dotnet-azd-eventgrid-blob)
+- [Python](https://github.com/Azure-Samples/functions-quickstart-python-azd-eventgrid-blob)
+- [TypeScript](https://github.com/Azure-Samples/functions-quickstart-typescript-azd-eventgrid-blob)
+- [JavaScript](https://github.com/Azure-Samples/functions-quickstart-javascript-azd-eventgrid-blob)
+- [Java](https://github.com/Azure-Samples/functions-quickstart-java-azd-eventgrid-blob)
+- [PowerShell](https://github.com/Azure-Samples/functions-quickstart-powershell-azd-eventgrid-blob)
+
 ### Timer Trigger Quickstarts
 
 Quickstarts for building timer triggered function apps in Flex Consumption.
